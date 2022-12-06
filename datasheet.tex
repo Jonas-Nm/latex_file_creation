@@ -1,4 +1,4 @@
-\documentclass{article}%
+\documentclass[11pt]{article}%
 \usepackage[T1]{fontenc}%
 \usepackage[utf8]{inputenc}%
 \usepackage{lmodern}%
@@ -23,10 +23,8 @@
 \AtBeginShipoutNext{\AtBeginShipoutUpperLeft{\put(\dimexpr\paperwidth-1.5cm\relax,-2.42cm){\makebox[0pt][r]{\Large Empowering Laser Technologies}}}}%
 %
 \begin{document}%
-\large%
-\begin{tikzpicture}[remember picture,overlay]%
-\node[anchor=north west,yshift=-25.0pt,xshift=40pt] at (current page.north west){\includegraphics[height=1.5cm]{pics/logo.pdf}};%
-\end{tikzpicture}%
+\normalsize%
+\begin{tikzpicture}[remember picture,overlay]\node[anchor=north west,yshift=-25.0pt,xshift=40pt] at (current page.north west){\includegraphics[height=1.5cm]{pics/logo.pdf}};\end{tikzpicture}%
 \vspace{22mm}%
 \begin{spacing}{1.5}%
 \begin{center} {\huge \textbf{Test Data Sheet} \par}%

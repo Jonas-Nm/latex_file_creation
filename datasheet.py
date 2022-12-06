@@ -27,9 +27,7 @@ def table_settings():
     doc.preamble.append(NoEscape(r'\renewcommand{\arraystretch}{1.9}'))
     doc.preamble.append(NoEscape(r'\arrayrulecolor[HTML]{999999}'))
 def logo():
-    p(r'\begin{tikzpicture}[remember picture,overlay]')
-    p(r'\node[anchor=north west,yshift=-25.0pt,xshift=40pt] at (current page.north west){\includegraphics[height=1.5cm]{pics/logo.pdf}};')
-    p(r'\end{tikzpicture}')
+    p(r'\begin{tikzpicture}[remember picture,overlay]\node[anchor=north west,yshift=-25.0pt,xshift=40pt] at (current page.north west){\includegraphics[height=1.5cm]{pics/logo.pdf}};\end{tikzpicture}')
 def toprightcorner():
     doc.preamble.append(NoEscape(r'\AtBeginShipoutNext{\AtBeginShipoutUpperLeft{\put(\dimexpr\paperwidth-1.5cm\relax,-2.42cm){\makebox[0pt][r]{\Large Empowering Laser Technologies}}}}'))
 def title(PM_type = 'PM8-NIR', SN = 'SN22.1234'):
@@ -109,7 +107,7 @@ def fill_document(doc):
 
 if __name__ == '__main__':
     # generate datasheet with content
-    doc = Document('datasheet',font_size='large')
+    doc = Document('datasheet', document_options = ['11pt'])
     fill_document(doc)
     doc.generate_pdf(clean_tex=False, compiler='pdfLaTeX')
     doc.generate_tex()
