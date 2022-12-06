@@ -12,17 +12,26 @@ def packages():
     doc.preamble.append(NoEscape(r'\usepackage{tikz}'))
     doc.preamble.append(NoEscape(r'\usepackage{atbegshi,picture}'))
     doc.preamble.append(NoEscape(r'\usepackage[a4paper, total={7in, 10.5in}]{geometry}'))
+    doc.preamble.append(NoEscape(r'\usepackage{siunitx}'))
+    doc.preamble.append(NoEscape(r'\usepackage{fixltx2e}'))
+    doc.preamble.append(NoEscape(r'\usepackage[pscoord]{eso-pic}'))
+def general_settings():
+    # change font type
+    p(r'\renewcommand{\familydefault}{\sfdefault}')
+    # the following defines a command to set everywhere on the page a text with overlay, i.e. not disturbing other content:
+    p(r'\newcommand{\placetextbox}[3]{\setbox0=\hbox{#3}\AddToShipoutPictureFG*{\put(\LenToUnit{#1\paperwidth},\LenToUnit{#2\paperheight}){\vtop{{\null}\makebox[0pt][c]{#3}}}}}')
+
 def table_settings():
     doc.preamble.append(NoEscape(r'\setlength{\arrayrulewidth}{0.2pt}'))
     doc.preamble.append(NoEscape(r'\setlength{\tabcolsep}{8pt}'))
-    doc.preamble.append(NoEscape(r'\renewcommand{\arraystretch}{2.0}'))
+    doc.preamble.append(NoEscape(r'\renewcommand{\arraystretch}{1.9}'))
     doc.preamble.append(NoEscape(r'\arrayrulecolor[HTML]{999999}'))
 def logo():
     p(r'\begin{tikzpicture}[remember picture,overlay]')
     p(r'\node[anchor=north west,yshift=-25.0pt,xshift=50pt] at (current page.north west){\includegraphics[height=2.5cm]{kitten.jpg}};')
     p(r'\end{tikzpicture}')
 def toprightcorner():
-    doc.preamble.append(NoEscape(r'\AtBeginShipoutNext{\AtBeginShipoutUpperLeft{\put(\dimexpr\paperwidth-1.5cm\relax,-1.5cm){\makebox[0pt][r]{Empowering Laser Technologies}}}}'))
+    doc.preamble.append(NoEscape(r'\AtBeginShipoutNext{\AtBeginShipoutUpperLeft{\put(\dimexpr\paperwidth-1.5cm\relax,-2.42cm){\makebox[0pt][r]{\Large Empowering Laser Technologies}}}}'))
 def title(PM_type = 'PM8-NIR', SN = 'SN22.1234'):
     p(r'\vspace{25mm}')
     p(r'\begin{spacing}{1.5}')
@@ -64,7 +73,8 @@ def table1_page1(frequency_0 = 0.0):
     p(r'')
 
 def fill_document(doc):
-    packages()  #use latex packages
+    packages()
+    general_settings()
     table_settings()
     toprightcorner()
     logo()
