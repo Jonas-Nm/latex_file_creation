@@ -68,7 +68,7 @@ def fill_document(doc):
     table_settings()
     toprightcorner()
     logo()
-    title(PM_type = 'PM7-SWIR1\_20', SN = '22.1234')
+    title(PM_type = 'PM7-SWIR1\_20', SN = '22.1235')
     drawing_title_modulator(filelocation = '')
     table1_page1(frequency_0 = 15.0)
 
