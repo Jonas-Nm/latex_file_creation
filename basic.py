@@ -26,20 +26,20 @@ if __name__ == '__main__':
     doc.generate_tex()
 
     # Document with `\maketitle` command activated
-    doc = Document()
+#    doc = Document()
 
-    doc.preamble.append(Command('title', 'Awesome Title'))
-    doc.preamble.append(Command('author', 'Anonymous author'))
-    doc.preamble.append(Command('date', NoEscape(r'\today')))
-    doc.append(NoEscape(r'\maketitle'))
+ #   doc.preamble.append(Command('title', 'Awesome Title'))
+ #   doc.preamble.append(Command('author', 'Anonymous author'))
+ #   doc.preamble.append(Command('date', NoEscape(r'\today')))
+ #   doc.append(NoEscape(r'\maketitle'))
 
-    fill_document(doc)
+ #   fill_document(doc)
 
-    doc.generate_pdf('basic_maketitle', clean_tex=False, compiler='pdfLaTeX')
+#    doc.generate_pdf('basic_maketitle', clean_tex=False, compiler='pdfLaTeX')
 
     # Add stuff to the document
-    with doc.create(Section('A second section')):
-        doc.append('Some text.')
+#    with doc.create(Section('A second section')):
+#        doc.append('Some text.')
 
-    doc.generate_pdf('basic_maketitle2', clean_tex=False, compiler='pdfLaTeX')
+ #   doc.generate_pdf('basic_maketitle2', clean_tex=False, compiler='pdfLaTeX')
     tex = doc.dumps()  # The document as string in LaTeX syntax
