@@ -25,7 +25,7 @@ def packages():
     doc.preamble.append(NoEscape(r'   \parbox[b][\paperheight]{\paperwidth}{'))
     doc.preamble.append(NoEscape(r'     \vfill'))
     doc.preamble.append(NoEscape(r'     \centering'))
-    doc.preamble.append(NoEscape(r'     \includegraphics[height=1.5cm]{pics/logo.pdf}'))
+    doc.preamble.append(NoEscape(r'     \includegraphics[height=1.5cm]{images/logo.pdf}'))
     doc.preamble.append(NoEscape(r'     \vfill'))
     doc.preamble.append(NoEscape(r'    }'))
     doc.preamble.append(NoEscape(r'  }'))

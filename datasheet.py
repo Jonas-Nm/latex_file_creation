@@ -2,108 +2,172 @@ from pylatex import Document, Command
 from pylatex.utils import NoEscape
 
 def p(string):
-    # writes plain latex string
+    # writes plain latex string after \begin{document}
     return doc.append(NoEscape(string))
+def b(string):
+    # writes plain latex string to preamble
+    return doc.preamble.append(NoEscape(string))
+def text_command():
+    b(r'\newcommand{\placetextbox}[3]{% \placetextbox{<horizontal pos>}{<vertical pos>}{<stuff>}')
+    b(r'\setbox0=\hbox{#3}% Put <stuff> in a box')
+    b(r'\AddToShipoutPictureFG*{% Add <stuff> to current page foreground')
+    b(r'\put(\LenToUnit{#1\paperwidth},\LenToUnit{#2\paperheight}){\vtop{{\null}\makebox[0pt][c]{#3}}}}}')
+def picture_command_generator(type,file,coordinates,height):
+    # what type of image? Is it 'Logo', 'Title' drawing, etc?
+    # height for example '1.5cm'
+    # put_x, put_y, e.g. -200,370 for top left corner qubig logo
+    # file location, e.g. 'images/logo.pdf'
+    b(r'\newcommand\BackgroundPicture'+type+r'{')
+    b(r'\put('+str(coordinates[0])+','+str(coordinates[1])+r'){\parbox[b][\paperheight]{\paperwidth}{\vfill')
+    b(r'\centering\includegraphics[height='+height+r']{'+file+r'}\vfill}}}')
+def banner_command():
+    b(r'\newcommand{\banner}[1]{\begin{table}[h]\centering')
+    b(r'\begin{tabular}{|p{17cm}|}\hline\rowcolor[HTML]{153c4a}')
+    b(r'\hfil \textcolor{white}{\Large \textbf{{#1}}}')
+    b(r'\end{tabular}\end{table}}')
+def space(size):
+    p(r'\vspace{'+size+'}')
 def packages():
     #####packages
-    doc.preamble.append(NoEscape(r'\usepackage[table]{xcolor}'))
-    doc.preamble.append(NoEscape(r'\usepackage{setspace}'))
-    doc.preamble.append(NoEscape(r'\usepackage{graphicx}'))
-    doc.preamble.append(NoEscape(r'\usepackage{tikz}'))
-    doc.preamble.append(NoEscape(r'\usepackage{atbegshi,picture}'))
-    doc.preamble.append(NoEscape(r'\usepackage[a4paper, total={7in, 10.5in}]{geometry}'))
-    doc.preamble.append(NoEscape(r'\usepackage{siunitx}'))
-    doc.preamble.append(NoEscape(r'\usepackage{fixltx2e}'))
-    doc.preamble.append(NoEscape(r'\usepackage[pscoord]{eso-pic}'))
-def general_settings():
-    # change font type
+    b(r'\usepackage[table]{xcolor}')
+    b(r'\usepackage{graphicx}')
+    b(r'\usepackage{setspace}')
+    b(r'\usepackage{siunitx}')
+    b(r'\usepackage{fixltx2e}')
+    b(r'\usepackage[a4paper, total={7in, 10.5in}]{geometry}')
+    b(r'\usepackage[pscoord]{eso-pic}')
+def font():
     doc.preamble.append(NoEscape(r'\renewcommand{\familydefault}{\sfdefault}'))
-    # the following defines a command to set everywhere on the page a text with overlay, i.e. not disturbing other content:
-    doc.preamble.append(NoEscape(r'\newcommand{\placetextbox}[3]{\setbox0=\hbox{#3}\AddToShipoutPictureFG*{\put(\LenToUnit{#1\paperwidth},\LenToUnit{#2\paperheight}){\vtop{{\null}\makebox[0pt][c]{#3}}}}}'))
 
+class Picture():
+    def __init__(self, type, file, coordinates, height):
+        self.type = type
+        self.file = file
+        self.coordinates = coordinates
+        self.height = height
+        picture_command_generator(self.type, self.file, self.coordinates, self.height)
+    def insert(self):
+        p(r'\AddToShipoutPictureBG*{\BackgroundPicture'+self.type+r'}')
+
+class Text():
+    def __init__(self, text='', size='', coordinates = [0.0,0.0]):
+        self.text = text
+        self.size = size
+        self.coordinates = coordinates #[0.0, 0.0] is defined as left bottom corner, [1.0, 1.0] as top right corner
+    def insert(self):
+        p(r'\placetextbox{' + str(self.coordinates[0]) + r'}{' + str(self.coordinates[1]) + r'}{' + self.size + ' ' + self.text + r'}')
+    def toprightcorner(self):
+        self.text = 'Empowering Laser Technologies'
+        self.size = r'\Large'
+        self.coordinates = [0.78,0.928]
+        self.insert()
+    def footnote_page1(self):
+        pass
 def table_settings():
-    doc.preamble.append(NoEscape(r'\setlength{\arrayrulewidth}{0.2pt}'))
-    doc.preamble.append(NoEscape(r'\setlength{\tabcolsep}{8pt}'))
-    doc.preamble.append(NoEscape(r'\renewcommand{\arraystretch}{1.9}'))
-    doc.preamble.append(NoEscape(r'\arrayrulecolor[HTML]{999999}'))
-def logo():
-    p(r'\begin{tikzpicture}[remember picture,overlay]\node[anchor=north west,yshift=-25.0pt,xshift=40pt] at (current page.north west){\includegraphics[height=1.5cm]{pics/logo.pdf}};\end{tikzpicture}')
-def toprightcorner():
-    doc.preamble.append(NoEscape(r'\AtBeginShipoutNext{\AtBeginShipoutUpperLeft{\put(\dimexpr\paperwidth-1.5cm\relax,-2.42cm){\makebox[0pt][r]{\Large Empowering Laser Technologies}}}}'))
-def title(PM_type = 'PM8-NIR', SN = 'SN22.1234'):
-    p(r'\vspace{22mm}')
-    p(r'\begin{spacing}{1.5}')
+    b(r'\setlength{\arrayrulewidth}{0.2pt}')
+    b(r'\setlength{\tabcolsep}{8pt}')
+    b(r'\renewcommand{\arraystretch}{1.9}')
+    b(r'\arrayrulecolor[HTML]{999999}')
+def general_settings():
+    packages()
+    font()
+    table_settings()
+    text_command()
+    banner_command()
+    logo = Picture('Logo', 'images/logo.pdf', [-200,370] , '1.5cm')
+    logo.insert()
+    Text().toprightcorner()
+def title_text(PM_type = 'PM8-NIR', SN = 'SN22.1234'):
+    p(r'\phantom{This text will be invisible}')
+    p(r'\vspace{25mm}')
+    p(r'\begin{spacing}{0.5}')
     p(r'\begin{center} {\huge \textbf{Test Data Sheet} \par}')
     p(r'\end{center}')
     p(r'\end{spacing}')
     p(r'\begin{center} {\Large\textbf{' + PM_type + r'} \par} \end{center}')
     p(r'\begin{center} {\normalsize ' + SN + ' \par} \end{center}')
     p(r'\begin{center} {\Large \textbf{Resonant electro-optic phase modulator}}\end{center}')
-def drawing_title_modulator(filelocation = ''):
-    p(r'\begin{figure}[h]')
-    p(r'\includegraphics[width=4cm]{pics/Cube_page1}')
-    p(r'\centering')
-    p(r'\end{figure}')
-def table1_page1(frequency_0 = 0.0):
-    p(r'\begin{table}[h]')
-    p(r'\centering')
-    p(r'\begin{tabular}{ |p{9.5cm}|p{3cm}|p{2.0cm}|  }')
-    p(r'\hline')
-    p(r'\rowcolor[HTML]{153c4a}')
-    p(r'\textcolor{white}{\textbf{RF properties}}  & \hfil \textcolor{white}{\textbf{Value}} & \hfil \textcolor{white}{\textbf{Unit}}  \\')
-    p(r'\hline')
-    p(r'Resonance frequency: f$_{0}$ $^{1)}$   & \hfil 5.0 & \hfil MHz \\')
-    p(r'\hline')
-    p(r'Bandwidth: $\Delta \nu$  & \hfil 101   & \hfil kHz \\')
-    p(r'\hline')
-    p(r'Quality Factor: Q & \multicolumn{2}{|c|}{8}  \\')
-    p(r'\hline')
-    p(r'Required RF power for 1rad $@$ 852nm $^{2)}$   & \hfil 9.3 & \hfil dBm \\')
-    p(r'\hline')
-    p(r'max. RF power: RF\textsubscript{max} $^{3)}$ & \hfil 0.5   & \hfil W \\')
-    p(r'\hline')
-    p(r'\end{tabular}')
-    p(r'\end{table}')
-    p(r'\vspace{-5mm}')
-def table2_page1():
-    p(r'\begin{table}[h]')
-    p(r'\centering')
-    p(r'\begin{tabular}{ |p{9.5cm}|p{3cm}|p{2.0cm}|  }')
-    p(r'\hline')
-    p(r'\rowcolor[HTML]{153c4a}')
-    p(r'\textcolor{white}{\textbf{Optical properties}}  & \hfil \textcolor{white}{\textbf{Value}} & \hfil \textcolor{white}{\textbf{Unit}} \\')
-    p(r'\hline')
-    p(r'Aperture & \hfil 3x3 & \hfil mm$^2$ \\')
-    p(r'\hline')
-    p(r'Wavefront distortion (633nm) & \hfil $\lambda / 6$   & \hfil nm \\')
-    p(r'\hline')
-    p(r'Recommended optical intensity (852nm) & \hfil \si{<} 1 & \hfil W/mm$^2$ \\')
-    p(r'\hline')
-    p(r'AR coating (R\textsubscript{avg}\si{<}1\% ) & \hfil 630 - 1100 & \hfil nm  \\')
-    p(r'\hline')
-    p(r'\end{tabular}')
-    p(r'\end{table}')
-def footnote_page1():
-    p(r'\placetextbox{0.30}{0.06}{\scriptsize $^{1)}$25°C   $^{2)}$with 50$\si{\ohm}$ termination   $^{3)}$no damage with RF\textsubscript{in}\si{<}1W  }')
+    if options != []:
+       Text('with' , r'\normalsize' , [0.5,0.71]).insert()
+       inc = 0.0
+       for element in options:
+           if element in title_options:
+                inc = inc - 0.015
+                Text(r'- '+title_options[element], '', [0.5, 0.71+inc]).insert()
+class Table():
+    def __init__(self):
+        pass
+    def __begin(self):
+        p(r'\begin{table}[h]\centering\begin{tabular}{|p{9.5cm}|p{3cm}|p{2.0cm}|}\hline\rowcolor[HTML]{153c4a}\textcolor{white}')
+    def __end(self):
+        p(r'\end{tabular}\end{table}')
+        p(r'\vspace{-7mm}')
+    def RF_std(self, f0, bw, Q, wl, RF_1rad, RF_max = 0.5):
+        self.__begin()
+        p(r'{\textbf{RF properties}}  & \hfil \textcolor{white}{\textbf{Value}} & \hfil \textcolor{white}{\textbf{Unit}}  \\ \hline')
+        p(r'Resonance frequency: f$_{0}$ $^{1)}$  & \hfil '+str(f0)+r' & \hfil MHz \\ \hline')
+        p(r'Bandwidth: $\Delta \nu$  & \hfil '+str(bw)+r'   & \hfil MHz \\ \hline')
+        p(r'Quality Factor: Q & \multicolumn{2}{|c|}{'+str(Q)+r'}  \\ \hline')
+        p(r'Required RF power for 1rad $@$ '+str(wl)+r'nm $^{2)}$   & \hfil '+str(RF_1rad)+r' & \hfil dBm \\ \hline')
+        p(r'max. RF power: RF\textsubscript{max} $^{3)}$ & \hfil '+str(RF_max)+r'   & \hfil W \\ \hline')
+        self.__end()
+    def RF_tuning(self):
+        pass
+    def optical_std(self,aperture,wavefront,wl,intensity,R_AR,AR):
+        self.__begin()
+        p(r'{\textbf{Optical properties}}  & \hfil \textcolor{white}{\textbf{Value}} & \hfil \textcolor{white}{\textbf{Unit}} \\ \hline')
+        p(r'Aperture & \hfil '+aperture+r' & \hfil mm$^2$ \\ \hline')
+        p(r'Wavefront distortion (633nm) & \hfil $\lambda / '+str(wavefront)+r' $   & \hfil nm \\ \hline')
+        p(r'Recommended optical intensity ('+str(wl)+r'nm) & \hfil \si{<} '+str(intensity)+r' & \hfil W/mm$^2$ \\ \hline')
+        p(r'AR coating (R\textsubscript{avg}\si{<}'+str(R_AR)+r'\% ) & \hfil '+AR+r' & \hfil nm  \\ \hline')
+        self.__end()
+    def optical_wedge(self):
+        pass
+    def dc_port():
+        pass
+def footnote_page1(T=23,damage=1):
+    Text(r'$^{1)}$'+str(T)+r'°C $^{2)}$with 50$\si{\ohm}$ termination $^{3)}$no damage with RF\textsubscript{in}\si{<}'+str(damage)+r'W',
+         r'\scriptsize' , [0.30,0.06]).insert()
+def measured_modulation():
+    p(r'\newpage')
+    p(r'\banner{Measured modulation}')
+    Picture('MeasuredMod' , 'images/measuredmodulation.pdf' , [0,60] , '21.0cm').insert()
+    Picture('MeasuredModSetup', 'images/measuredmodulationsetup.pdf', [0, -320], '3.4cm').insert()
+    Picture('MeasuredModSubtext', 'images/measuredmodulationsubtext.pdf', [-130, -180], '4.8cm').insert()
+def resonance_characteristics():
+    p(r'\newpage')
+    p(r'\banner{Resonance Characteristics}')
+    Picture('ResonanceCharacSetup' , 'images/resonancecharacteristics.pdf' , [0,300] , '3.4cm').insert()
+    Picture('PictureVNA', 'images/vna.png', [0, 50], '14.0cm').insert()
+    space('180mm')
+def handling_instructions():
+    p(r'\banner{Handling instructions}')
+    Picture('Handling', 'images/handling_instructions_std.pdf', [0, -250], '2.12cm').insert()
+def package_drawing():
+    p(r'\newpage')
+    p(r'\banner{Package drawing}')
+    Picture('Drawing', 'images/drawing_cube_std.pdf', [0, 120], '12.0cm').insert()
+def signature():
+    Picture('Signature', 'images/signature.pdf', [0, -360], '1.51cm').insert()
 
-    p(r'')
-    p(r'')
-    p(r'')
-    p(r'')
 
-
-
+#options = ['TXC', 'T', 'DC', 'W']
+options = []
+title_options = {'TXC' : 'Temperature control option', 'T' : 'Frequency tuning option',
+                 'W' : 'Crystal wedge option', 'DC' : 'DC-port option'}
 def fill_document(doc):
-    packages()
     general_settings()
-    table_settings()
-    toprightcorner()
-    logo()
-    title(PM_type = 'PM7-SWIR1\_20', SN = '22.1235')
-    drawing_title_modulator(filelocation = '')
-    table1_page1(frequency_0 = 15.0)
-    table2_page1()
-    footnote_page1()
+    title_text(PM_type = 'PM7-SWIR1\_20', SN = 'SN22.1235')
+    Picture('Title', 'images/Cube_page1.pdf', [0, 45], '4.0cm').insert()
+    space('70mm')
+    Table().RF_std(f0=1.0,bw=1.0,Q=1.0,wl=780,RF_1rad=1.0)
+    Table().optical_std(aperture='3x3',wavefront=6,wl=780,intensity=1,R_AR=1,AR='630 - 1100')
+    footnote_page1(T=23, damage=1)
+    measured_modulation()
+    resonance_characteristics()
+    handling_instructions()
+    package_drawing()
+    signature()
 
 if __name__ == '__main__':
     # generate datasheet with content

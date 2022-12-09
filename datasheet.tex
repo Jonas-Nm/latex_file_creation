@@ -6,77 +6,103 @@
 \usepackage{lastpage}%
 %
 \usepackage[table]{xcolor}%
-\usepackage{setspace}%
 \usepackage{graphicx}%
-\usepackage{tikz}%
-\usepackage{atbegshi,picture}%
-\usepackage[a4paper, total={7in, 10.5in}]{geometry}%
+\usepackage{setspace}%
 \usepackage{siunitx}%
 \usepackage{fixltx2e}%
+\usepackage[a4paper, total={7in, 10.5in}]{geometry}%
 \usepackage[pscoord]{eso-pic}%
 \renewcommand{\familydefault}{\sfdefault}%
-\newcommand{\placetextbox}[3]{\setbox0=\hbox{#3}\AddToShipoutPictureFG*{\put(\LenToUnit{#1\paperwidth},\LenToUnit{#2\paperheight}){\vtop{{\null}\makebox[0pt][c]{#3}}}}}%
 \setlength{\arrayrulewidth}{0.2pt}%
 \setlength{\tabcolsep}{8pt}%
 \renewcommand{\arraystretch}{1.9}%
 \arrayrulecolor[HTML]{999999}%
-\AtBeginShipoutNext{\AtBeginShipoutUpperLeft{\put(\dimexpr\paperwidth-1.5cm\relax,-2.42cm){\makebox[0pt][r]{\Large Empowering Laser Technologies}}}}%
+\newcommand{\placetextbox}[3]{% \placetextbox{<horizontal pos>}{<vertical pos>}{<stuff>}%
+\setbox0=\hbox{#3}% Put <stuff> in a box%
+\AddToShipoutPictureFG*{% Add <stuff> to current page foreground%
+\put(\LenToUnit{#1\paperwidth},\LenToUnit{#2\paperheight}){\vtop{{\null}\makebox[0pt][c]{#3}}}}}%
+\newcommand{\banner}[1]{\begin{table}[h]\centering%
+\begin{tabular}{|p{17cm}|}\hline\rowcolor[HTML]{153c4a}%
+\hfil \textcolor{white}{\Large \textbf{{#1}}}%
+\end{tabular}\end{table}}%
+\newcommand\BackgroundPictureLogo{%
+\put(-200,370){\parbox[b][\paperheight]{\paperwidth}{\vfill%
+\centering\includegraphics[height=1.5cm]{images/logo.pdf}\vfill}}}%
+\newcommand\BackgroundPictureTitle{%
+\put(0,45){\parbox[b][\paperheight]{\paperwidth}{\vfill%
+\centering\includegraphics[height=4.0cm]{images/Cube_page1.pdf}\vfill}}}%
+\newcommand\BackgroundPictureMeasuredMod{%
+\put(0,60){\parbox[b][\paperheight]{\paperwidth}{\vfill%
+\centering\includegraphics[height=21.0cm]{images/measuredmodulation.pdf}\vfill}}}%
+\newcommand\BackgroundPictureMeasuredModSetup{%
+\put(0,-320){\parbox[b][\paperheight]{\paperwidth}{\vfill%
+\centering\includegraphics[height=3.4cm]{images/measuredmodulationsetup.pdf}\vfill}}}%
+\newcommand\BackgroundPictureMeasuredModSubtext{%
+\put(-130,-180){\parbox[b][\paperheight]{\paperwidth}{\vfill%
+\centering\includegraphics[height=4.8cm]{images/measuredmodulationsubtext.pdf}\vfill}}}%
+\newcommand\BackgroundPictureResonanceCharacSetup{%
+\put(0,300){\parbox[b][\paperheight]{\paperwidth}{\vfill%
+\centering\includegraphics[height=3.4cm]{images/resonancecharacteristics.pdf}\vfill}}}%
+\newcommand\BackgroundPicturePictureVNA{%
+\put(0,50){\parbox[b][\paperheight]{\paperwidth}{\vfill%
+\centering\includegraphics[height=14.0cm]{images/vna.png}\vfill}}}%
+\newcommand\BackgroundPictureHandling{%
+\put(0,-250){\parbox[b][\paperheight]{\paperwidth}{\vfill%
+\centering\includegraphics[height=2.12cm]{images/handling_instructions_std.pdf}\vfill}}}%
+\newcommand\BackgroundPictureDrawing{%
+\put(0,120){\parbox[b][\paperheight]{\paperwidth}{\vfill%
+\centering\includegraphics[height=12.0cm]{images/drawing_cube_std.pdf}\vfill}}}%
+\newcommand\BackgroundPictureSignature{%
+\put(0,-360){\parbox[b][\paperheight]{\paperwidth}{\vfill%
+\centering\includegraphics[height=1.51cm]{images/signature.pdf}\vfill}}}%
 %
 \begin{document}%
 \normalsize%
-\begin{tikzpicture}[remember picture,overlay]\node[anchor=north west,yshift=-25.0pt,xshift=40pt] at (current page.north west){\includegraphics[height=1.5cm]{pics/logo.pdf}};\end{tikzpicture}%
-\vspace{22mm}%
-\begin{spacing}{1.5}%
+\AddToShipoutPictureBG*{\BackgroundPictureLogo}%
+\placetextbox{0.78}{0.928}{\Large Empowering Laser Technologies}%
+\phantom{This text will be invisible}%
+\vspace{25mm}%
+\begin{spacing}{0.5}%
 \begin{center} {\huge \textbf{Test Data Sheet} \par}%
 \end{center}%
 \end{spacing}%
 \begin{center} {\Large\textbf{PM7-SWIR1\_20} \par} \end{center}%
-\begin{center} {\normalsize 22.1235 \par} \end{center}%
+\begin{center} {\normalsize SN22.1235 \par} \end{center}%
 \begin{center} {\Large \textbf{Resonant electro-optic phase modulator}}\end{center}%
-\begin{figure}[h]%
-\includegraphics[width=4cm]{pics/Cube_page1}%
-\centering%
-\end{figure}%
-\begin{table}[h]%
-\centering%
-\begin{tabular}{ |p{9.5cm}|p{3cm}|p{2.0cm}|  }%
-\hline%
-\rowcolor[HTML]{153c4a}%
-\textcolor{white}{\textbf{RF properties}}  & \hfil \textcolor{white}{\textbf{Value}} & \hfil \textcolor{white}{\textbf{Unit}}  \\%
-\hline%
-Resonance frequency: f$_{0}$ $^{1)}$   & \hfil 5.0 & \hfil MHz \\%
-\hline%
-Bandwidth: $\Delta \nu$  & \hfil 101   & \hfil kHz \\%
-\hline%
-Quality Factor: Q & \multicolumn{2}{|c|}{8}  \\%
-\hline%
-Required RF power for 1rad $@$ 852nm $^{2)}$   & \hfil 9.3 & \hfil dBm \\%
-\hline%
-max. RF power: RF\textsubscript{max} $^{3)}$ & \hfil 0.5   & \hfil W \\%
-\hline%
-\end{tabular}%
-\end{table}%
-\vspace{-5mm}%
-\begin{table}[h]%
-\centering%
-\begin{tabular}{ |p{9.5cm}|p{3cm}|p{2.0cm}|  }%
-\hline%
-\rowcolor[HTML]{153c4a}%
-\textcolor{white}{\textbf{Optical properties}}  & \hfil \textcolor{white}{\textbf{Value}} & \hfil \textcolor{white}{\textbf{Unit}} \\%
-\hline%
-Aperture & \hfil 3x3 & \hfil mm$^2$ \\%
-\hline%
-Wavefront distortion (633nm) & \hfil $\lambda / 6$   & \hfil nm \\%
-\hline%
-Recommended optical intensity (852nm) & \hfil \si{<} 1 & \hfil W/mm$^2$ \\%
-\hline%
-AR coating (R\textsubscript{avg}\si{<}1\% ) & \hfil 630 - 1100 & \hfil nm  \\%
-\hline%
-\end{tabular}%
-\end{table}%
-\placetextbox{0.30}{0.06}{\scriptsize $^{1)}$25°C   $^{2)}$with 50$\si{\ohm}$ termination   $^{3)}$no damage with RF\textsubscript{in}\si{<}1W  }%
-%
-%
-%
-%
+\AddToShipoutPictureBG*{\BackgroundPictureTitle}%
+\vspace{70mm}%
+\begin{table}[h]\centering\begin{tabular}{|p{9.5cm}|p{3cm}|p{2.0cm}|}\hline\rowcolor[HTML]{153c4a}\textcolor{white}%
+{\textbf{RF properties}}  & \hfil \textcolor{white}{\textbf{Value}} & \hfil \textcolor{white}{\textbf{Unit}}  \\ \hline%
+Resonance frequency: f$_{0}$ $^{1)}$  & \hfil 1.0 & \hfil MHz \\ \hline%
+Bandwidth: $\Delta \nu$  & \hfil 1.0   & \hfil MHz \\ \hline%
+Quality Factor: Q & \multicolumn{2}{|c|}{1.0}  \\ \hline%
+Required RF power for 1rad $@$ 780nm $^{2)}$   & \hfil 1.0 & \hfil dBm \\ \hline%
+max. RF power: RF\textsubscript{max} $^{3)}$ & \hfil 0.5   & \hfil W \\ \hline%
+\end{tabular}\end{table}%
+\vspace{-7mm}%
+\begin{table}[h]\centering\begin{tabular}{|p{9.5cm}|p{3cm}|p{2.0cm}|}\hline\rowcolor[HTML]{153c4a}\textcolor{white}%
+{\textbf{Optical properties}}  & \hfil \textcolor{white}{\textbf{Value}} & \hfil \textcolor{white}{\textbf{Unit}} \\ \hline%
+Aperture & \hfil 3x3 & \hfil mm$^2$ \\ \hline%
+Wavefront distortion (633nm) & \hfil $\lambda / 6 $   & \hfil nm \\ \hline%
+Recommended optical intensity (780nm) & \hfil \si{<} 1 & \hfil W/mm$^2$ \\ \hline%
+AR coating (R\textsubscript{avg}\si{<}1\% ) & \hfil 630 - 1100 & \hfil nm  \\ \hline%
+\end{tabular}\end{table}%
+\vspace{-7mm}%
+\placetextbox{0.3}{0.06}{\scriptsize $^{1)}$23°C $^{2)}$with 50$\si{\ohm}$ termination $^{3)}$no damage with RF\textsubscript{in}\si{<}1W}%
+\newpage%
+\banner{Measured modulation}%
+\AddToShipoutPictureBG*{\BackgroundPictureMeasuredMod}%
+\AddToShipoutPictureBG*{\BackgroundPictureMeasuredModSetup}%
+\AddToShipoutPictureBG*{\BackgroundPictureMeasuredModSubtext}%
+\newpage%
+\banner{Resonance Characteristics}%
+\AddToShipoutPictureBG*{\BackgroundPictureResonanceCharacSetup}%
+\AddToShipoutPictureBG*{\BackgroundPicturePictureVNA}%
+\vspace{180mm}%
+\banner{Handling instructions}%
+\AddToShipoutPictureBG*{\BackgroundPictureHandling}%
+\newpage%
+\banner{Package drawing}%
+\AddToShipoutPictureBG*{\BackgroundPictureDrawing}%
+\AddToShipoutPictureBG*{\BackgroundPictureSignature}%
 \end{document}
