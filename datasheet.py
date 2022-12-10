@@ -1,5 +1,6 @@
 from pylatex import Document, Command
 from pylatex.utils import NoEscape
+from vna_eval import VNA
 
 def p(string):
     # writes plain latex string after \begin{document}
@@ -38,7 +39,6 @@ def packages():
     b(r'\usepackage[pscoord]{eso-pic}')
 def font():
     doc.preamble.append(NoEscape(r'\renewcommand{\familydefault}{\sfdefault}'))
-
 class Picture():
     def __init__(self, type, file, coordinates, height):
         self.type = type
@@ -48,7 +48,6 @@ class Picture():
         picture_command_generator(self.type, self.file, self.coordinates, self.height)
     def insert(self):
         p(r'\AddToShipoutPictureBG*{\BackgroundPicture'+self.type+r'}')
-
 class Text():
     def __init__(self, text='', size='', coordinates = [0.0,0.0]):
         self.text = text
@@ -105,8 +104,8 @@ class Table():
     def RF_std(self, f0, bw, Q, wl, RF_1rad, RF_max = 0.5):
         self.__begin()
         p(r'{\textbf{RF properties}}  & \hfil \textcolor{white}{\textbf{Value}} & \hfil \textcolor{white}{\textbf{Unit}}  \\ \hline')
-        p(r'Resonance frequency: f$_{0}$ $^{1)}$  & \hfil '+str(f0)+r' & \hfil MHz \\ \hline')
-        p(r'Bandwidth: $\Delta \nu$  & \hfil '+str(bw)+r'   & \hfil MHz \\ \hline')
+        p(r'Resonance frequency: f$_{0}$ $^{1)}$  & \hfil '+str(f0[0])+r' & \hfil '+f0[1]+r' \\ \hline')
+        p(r'Bandwidth: $\Delta \nu$  & \hfil '+str(bw[0])+r'   & \hfil '+bw[1]+r' \\ \hline')
         p(r'Quality Factor: Q & \multicolumn{2}{|c|}{'+str(Q)+r'}  \\ \hline')
         p(r'Required RF power for 1rad $@$ '+str(wl)+r'nm $^{2)}$   & \hfil '+str(RF_1rad)+r' & \hfil dBm \\ \hline')
         p(r'max. RF power: RF\textsubscript{max} $^{3)}$ & \hfil '+str(RF_max)+r'   & \hfil W \\ \hline')
@@ -155,13 +154,16 @@ def signature():
 options = []
 title_options = {'TXC' : 'Temperature control option', 'T' : 'Frequency tuning option',
                  'W' : 'Crystal wedge option', 'DC' : 'DC-port option'}
+vna = VNA('vna_remote.txt')
+# USE SCRAPING also for the pic1.pdf RF power 1rad, etc.. not only the PO!!!!!!!!!
+
 def fill_document(doc):
     general_settings()
-    title_text(PM_type = 'PM7-SWIR1\_20', SN = 'SN22.1235')
+    title_text(PM_type='PM7-SWIR1\_20', SN='SN22.1235')
     Picture('Title', 'images/Cube_page1.pdf', [0, 45], '4.0cm').insert()
     space('70mm')
-    Table().RF_std(f0=1.0,bw=1.0,Q=1.0,wl=780,RF_1rad=1.0)
-    Table().optical_std(aperture='3x3',wavefront=6,wl=780,intensity=1,R_AR=1,AR='630 - 1100')
+    Table().RF_std(f0=vna.f0('MHz'), bw=vna.bw('kHz'), Q=vna.Q(), wl=780, RF_1rad=1.0)
+    Table().optical_std(aperture='3x3', wavefront=6, wl=780, intensity=1, R_AR=1, AR='630 - 1100')
     footnote_page1(T=23, damage=1)
     measured_modulation()
     resonance_characteristics()
