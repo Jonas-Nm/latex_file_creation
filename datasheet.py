@@ -1,6 +1,7 @@
 from pylatex import Document, Command
 from pylatex.utils import NoEscape
 from vna_eval import VNA
+from pdfscraping import Power_dbm_1rad
 
 def p(string):
     # writes plain latex string after \begin{document}
@@ -102,17 +103,27 @@ class Table():
         p(r'\end{tabular}\end{table}')
         p(r'\vspace{-7mm}')
     def RF_std(self, f0, bw, Q, wl, RF_1rad, RF_max = 0.5):
+        if len(wl) > 1:
+            RF_1rad = str(RF_1rad[0])+' | '+str(RF_1rad[1])
+            wl = str(wl[0])+' | '+str(wl[1])
+        else:
+            wl = wl[0]
+            RF_1rad = RF_1rad[0]
         self.__begin()
         p(r'{\textbf{RF properties}}  & \hfil \textcolor{white}{\textbf{Value}} & \hfil \textcolor{white}{\textbf{Unit}}  \\ \hline')
         p(r'Resonance frequency: f$_{0}$ $^{1)}$  & \hfil '+str(f0[0])+r' & \hfil '+f0[1]+r' \\ \hline')
         p(r'Bandwidth: $\Delta \nu$  & \hfil '+str(bw[0])+r'   & \hfil '+bw[1]+r' \\ \hline')
         p(r'Quality Factor: Q & \multicolumn{2}{|c|}{'+str(Q)+r'}  \\ \hline')
-        p(r'Required RF power for 1rad $@$ '+str(wl)+r'nm $^{2)}$   & \hfil '+str(RF_1rad)+r' & \hfil dBm \\ \hline')
+        p(r'Required RF power for 1rad $@$ '+str(wl)+r'nm $^{2)}$   & \hfil '+RF_1rad+r' & \hfil dBm \\ \hline')
         p(r'max. RF power: RF\textsubscript{max} $^{3)}$ & \hfil '+str(RF_max)+r'   & \hfil W \\ \hline')
         self.__end()
     def RF_tuning(self):
         pass
     def optical_std(self,aperture,wavefront,wl,intensity,R_AR,AR):
+        if len(wl) > 1:
+            wl = min(wl)
+        else:
+            wl = wl[0]
         self.__begin()
         p(r'{\textbf{Optical properties}}  & \hfil \textcolor{white}{\textbf{Value}} & \hfil \textcolor{white}{\textbf{Unit}} \\ \hline')
         p(r'Aperture & \hfil '+aperture+r' & \hfil mm$^2$ \\ \hline')
@@ -155,15 +166,22 @@ options = []
 title_options = {'TXC' : 'Temperature control option', 'T' : 'Frequency tuning option',
                  'W' : 'Crystal wedge option', 'DC' : 'DC-port option'}
 vna = VNA('vna_remote.txt')
-# USE SCRAPING also for the pic1.pdf RF power 1rad, etc.. not only the PO!!!!!!!!!
+P_dBm_1rad = Power_dbm_1rad('images/measuredmodulation.pdf') #works with beta App generated file, how about mathematica?
+
+wl = [671, 780] #wl must be a list of the user wavelengths, and cannot be bigger than two at the moment
+RF_1rad = []
+for key in P_dBm_1rad:
+    if int(key) in wl:
+        RF_1rad.append(P_dBm_1rad[key])
+print(RF_1rad)
 
 def fill_document(doc):
     general_settings()
     title_text(PM_type='PM7-SWIR1\_20', SN='SN22.1235')
     Picture('Title', 'images/Cube_page1.pdf', [0, 45], '4.0cm').insert()
     space('70mm')
-    Table().RF_std(f0=vna.f0('MHz'), bw=vna.bw('kHz'), Q=vna.Q(), wl=780, RF_1rad=1.0)
-    Table().optical_std(aperture='3x3', wavefront=6, wl=780, intensity=1, R_AR=1, AR='630 - 1100')
+    Table().RF_std(f0=vna.f0('MHz'), bw=vna.bw('kHz'), Q=vna.Q(), wl=wl, RF_1rad=RF_1rad)
+    Table().optical_std(aperture='3x3', wavefront=6, wl=wl, intensity=1, R_AR=1, AR='630 - 1100')
     footnote_page1(T=23, damage=1)
     measured_modulation()
     resonance_characteristics()
