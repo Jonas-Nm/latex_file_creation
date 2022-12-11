@@ -3,7 +3,7 @@ import re
 
 
 
-def power_dbm_1rad(file='images/measuredmodulation.pdf'):
+def power_dbm_1rad(file=r'C:\Users\Jonas\PycharmProjects\latex_file_creation\images\measuredmodulation.pdf'):
     pdftext = PdfFileReader(file).pages[0].extract_text()
     result_wl_nm = re.search('l nm (.*)\n', pdftext)
     result_1rad_dBm = re.search('P dBm (.*)\n', pdftext)

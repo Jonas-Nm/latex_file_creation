@@ -164,10 +164,10 @@ def package_drawing():
     Picture('Drawing', 'images/drawing_cube_std.pdf', [0, 120], '12.0cm').insert()
 def signature():
     Picture('Signature', 'images/signature.pdf', [0, -360], '1.51cm').insert()
-def get_RF_1rad(pow_dBm_1rad):
+def get_RF_1rad(pow_dBm_1rad, wl_):
     rf_1rad = []
     for key in pow_dBm_1rad:
-        if int(key) in wl:
+        if int(key) in wl_:
             rf_1rad.append(pow_dBm_1rad[key])
     return rf_1rad
 
@@ -175,10 +175,10 @@ type, options, aperture, wl, wavefront = auftrag(file='PO/ProdAuftrag_T_TC.pdf',
 title_options = {'+TXC': 'Temperature control option', '+TC': 'Temperature control option', '+T1': 'Frequency tuning option',
                  '+T': 'Frequency tuning option', '+W': 'Crystal wedge option', '+DC': 'DC-port option'}
 vna = VNA()
-rf_1rad_values = get_RF_1rad(power_dbm_1rad()) #works with beta App generated file, how about mathematica?
+rf_1rad_values = get_RF_1rad(power_dbm_1rad(), wl) #works with beta App generated file, how about mathematica?
 
 
-def fill_document(doc):
+def fill_document():
     general_settings()
     title_text(PM_type=type, SN='SN22.1235')
     Picture('Title', 'images/Cube_page1.pdf', [0, 45], '4.0cm').insert()
@@ -195,7 +195,7 @@ def fill_document(doc):
 if __name__ == '__main__':
     # generate datasheet with content
     doc = Document('datasheet', document_options=['11pt'])
-    fill_document(doc)
+    fill_document()
     doc.generate_pdf(clean_tex=False, compiler='pdfLaTeX')
     doc.generate_tex()
     tex = doc.dumps()
