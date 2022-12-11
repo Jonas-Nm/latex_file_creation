@@ -1,7 +1,7 @@
 from pylatex import Document, Command
 from pylatex.utils import NoEscape
 from vna_eval import VNA
-from pdfscraping import Power_dbm_1rad
+from pdfscraping import power_dbm_1rad, auftrag
 
 def p(string):
     # writes plain latex string after \begin{document}
@@ -50,7 +50,7 @@ class Picture():
     def insert(self):
         p(r'\AddToShipoutPictureBG*{\BackgroundPicture'+self.type+r'}')
 class Text():
-    def __init__(self, text='', size='', coordinates = [0.0,0.0]):
+    def __init__(self, text='', size='', coordinates=[0.0, 0.0]):
         self.text = text
         self.size = size
         self.coordinates = coordinates #[0.0, 0.0] is defined as left bottom corner, [1.0, 1.0] as top right corner
@@ -74,10 +74,10 @@ def general_settings():
     table_settings()
     text_command()
     banner_command()
-    logo = Picture('Logo', 'images/logo.pdf', [-200,370] , '1.5cm')
+    logo = Picture('Logo', 'images/logo.pdf', [-200, 370], '1.5cm')
     logo.insert()
     Text().toprightcorner()
-def title_text(PM_type = 'PM8-NIR', SN = 'SN22.1234'):
+def title_text(PM_type, SN):
     p(r'\phantom{This text will be invisible}')
     p(r'\vspace{25mm}')
     p(r'\begin{spacing}{0.5}')
@@ -88,38 +88,42 @@ def title_text(PM_type = 'PM8-NIR', SN = 'SN22.1234'):
     p(r'\begin{center} {\normalsize ' + SN + ' \par} \end{center}')
     p(r'\begin{center} {\Large \textbf{Resonant electro-optic phase modulator}}\end{center}')
     if options != []:
-       Text('with' , r'\normalsize' , [0.5,0.71]).insert()
-       inc = 0.0
-       for element in options:
-           if element in title_options:
+        Text('with', r'\normalsize', [0.5, 0.71]).insert()
+        inc = 0.0
+        for element in options:
+            if element in title_options:
                 inc = inc - 0.015
                 Text(r'- '+title_options[element], '', [0.5, 0.71+inc]).insert()
-class Table():
+
+
+class Table:
     def __init__(self):
         pass
+
     def __begin(self):
         p(r'\begin{table}[h]\centering\begin{tabular}{|p{9.5cm}|p{3cm}|p{2.0cm}|}\hline\rowcolor[HTML]{153c4a}\textcolor{white}')
+
     def __end(self):
         p(r'\end{tabular}\end{table}')
         p(r'\vspace{-7mm}')
-    def RF_std(self, f0, bw, Q, wl, RF_1rad, RF_max = 0.5):
+    def rf_std(self, f0, bw, q, wl, rf_1rad, RF_max = 0.5):
         if len(wl) > 1:
-            RF_1rad = str(RF_1rad[0])+' | '+str(RF_1rad[1])
+            rf_1rad = str(rf_1rad[0])+' | '+str(rf_1rad[1])
             wl = str(wl[0])+' | '+str(wl[1])
         else:
             wl = wl[0]
-            RF_1rad = RF_1rad[0]
+            rf_1rad = str(rf_1rad[0])
         self.__begin()
         p(r'{\textbf{RF properties}}  & \hfil \textcolor{white}{\textbf{Value}} & \hfil \textcolor{white}{\textbf{Unit}}  \\ \hline')
         p(r'Resonance frequency: f$_{0}$ $^{1)}$  & \hfil '+str(f0[0])+r' & \hfil '+f0[1]+r' \\ \hline')
         p(r'Bandwidth: $\Delta \nu$  & \hfil '+str(bw[0])+r'   & \hfil '+bw[1]+r' \\ \hline')
-        p(r'Quality Factor: Q & \multicolumn{2}{|c|}{'+str(Q)+r'}  \\ \hline')
-        p(r'Required RF power for 1rad $@$ '+str(wl)+r'nm $^{2)}$   & \hfil '+RF_1rad+r' & \hfil dBm \\ \hline')
+        p(r'Quality Factor: Q & \multicolumn{2}{|c|}{'+str(q)+r'}  \\ \hline')
+        p(r'Required RF power for 1rad $@$ '+str(wl)+r'nm $^{2)}$   & \hfil '+rf_1rad+r' & \hfil dBm \\ \hline')
         p(r'max. RF power: RF\textsubscript{max} $^{3)}$ & \hfil '+str(RF_max)+r'   & \hfil W \\ \hline')
         self.__end()
     def RF_tuning(self):
         pass
-    def optical_std(self,aperture,wavefront,wl,intensity,R_AR,AR):
+    def optical_std(self,aperture,wavefront,wl,intensity,r_ar,ar):
         if len(wl) > 1:
             wl = min(wl)
         else:
@@ -129,11 +133,11 @@ class Table():
         p(r'Aperture & \hfil '+aperture+r' & \hfil mm$^2$ \\ \hline')
         p(r'Wavefront distortion (633nm) & \hfil $\lambda / '+str(wavefront)+r' $   & \hfil nm \\ \hline')
         p(r'Recommended optical intensity ('+str(wl)+r'nm) & \hfil \si{<} '+str(intensity)+r' & \hfil W/mm$^2$ \\ \hline')
-        p(r'AR coating (R\textsubscript{avg}\si{<}'+str(R_AR)+r'\% ) & \hfil '+AR+r' & \hfil nm  \\ \hline')
+        p(r'AR coating (R\textsubscript{avg}\si{<}'+str(r_ar)+r'\% ) & \hfil '+ar+r' & \hfil nm  \\ \hline')
         self.__end()
     def optical_wedge(self):
         pass
-    def dc_port():
+    def dc_port(self):
         pass
 def footnote_page1(T=23,damage=1):
     Text(r'$^{1)}$'+str(T)+r'°C $^{2)}$with 50$\si{\ohm}$ termination $^{3)}$no damage with RF\textsubscript{in}\si{<}'+str(damage)+r'W',
@@ -159,29 +163,28 @@ def package_drawing():
     Picture('Drawing', 'images/drawing_cube_std.pdf', [0, 120], '12.0cm').insert()
 def signature():
     Picture('Signature', 'images/signature.pdf', [0, -360], '1.51cm').insert()
+def get_RF_1rad(pow_dBm_1rad):
+    rf_1rad = []
+    for key in pow_dBm_1rad:
+        if int(key) in wl:
+            rf_1rad.append(pow_dBm_1rad[key])
+    return rf_1rad
+type, options, aperture, wl, wavefront = auftrag(file='PO/ProdAuftrag_T_TC.pdf', pos=1)
+wl = [780]
+#wl must be a list of the user wavelengths, and cannot be bigger than two at the moment
+title_options = {'+TXC': 'Temperature control option', '+TC': 'Temperature control option', '+T1': 'Frequency tuning option',
+                 '+T': 'Frequency tuning option', '+W': 'Crystal wedge option', '+DC': 'DC-port option'}
+vna = VNA()
+rf_1rad_values = get_RF_1rad(power_dbm_1rad()) #works with beta App generated file, how about mathematica?
 
-
-#options = ['TXC', 'T', 'DC', 'W']
-options = []
-title_options = {'TXC' : 'Temperature control option', 'T' : 'Frequency tuning option',
-                 'W' : 'Crystal wedge option', 'DC' : 'DC-port option'}
-vna = VNA('vna_remote.txt')
-P_dBm_1rad = Power_dbm_1rad('images/measuredmodulation.pdf') #works with beta App generated file, how about mathematica?
-
-wl = [671, 780] #wl must be a list of the user wavelengths, and cannot be bigger than two at the moment
-RF_1rad = []
-for key in P_dBm_1rad:
-    if int(key) in wl:
-        RF_1rad.append(P_dBm_1rad[key])
-print(RF_1rad)
 
 def fill_document(doc):
     general_settings()
-    title_text(PM_type='PM7-SWIR1\_20', SN='SN22.1235')
+    title_text(PM_type=type, SN='SN22.1235')
     Picture('Title', 'images/Cube_page1.pdf', [0, 45], '4.0cm').insert()
     space('70mm')
-    Table().RF_std(f0=vna.f0('MHz'), bw=vna.bw('kHz'), Q=vna.Q(), wl=wl, RF_1rad=RF_1rad)
-    Table().optical_std(aperture='3x3', wavefront=6, wl=wl, intensity=1, R_AR=1, AR='630 - 1100')
+    Table().rf_std(f0=vna.f0('MHz'), bw=vna.bw('kHz'), q=vna.q(), wl=wl, rf_1rad=rf_1rad_values)
+    Table().optical_std(aperture=aperture, wavefront=wavefront, wl=wl, intensity=1, r_ar=1, ar='630 - 1100') #take ar from .csv where label info, SN, tuning, etc
     footnote_page1(T=23, damage=1)
     measured_modulation()
     resonance_characteristics()
@@ -191,7 +194,7 @@ def fill_document(doc):
 
 if __name__ == '__main__':
     # generate datasheet with content
-    doc = Document('datasheet', document_options = ['11pt'])
+    doc = Document('datasheet', document_options=['11pt'])
     fill_document(doc)
     doc.generate_pdf(clean_tex=False, compiler='pdfLaTeX')
     doc.generate_tex()

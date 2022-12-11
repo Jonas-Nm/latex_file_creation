@@ -2,7 +2,7 @@ import np as np
 import numpy as np
 
 class VNA():
-    def __init__(self, file):
+    def __init__(self, file='vna_remote.txt'):
         self.file = file
         with open(self.file, "r") as lines:
             lines = lines.readlines()[1:]
@@ -35,7 +35,7 @@ class VNA():
             return np.round(np.abs(self.freq[x[1]] - self.freq[x[3]])/1E3, 1), 'kHz'
         else:
             return np.abs(self.freq[x[1]] - self.freq[x[3]]), 'Hz'
-    def Q(self):
+    def q(self):
         return int(np.round(self.f0()[0]/self.bw()[0]))
 
 
