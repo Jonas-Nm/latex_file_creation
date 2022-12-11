@@ -169,9 +169,8 @@ def get_RF_1rad(pow_dBm_1rad):
         if int(key) in wl:
             rf_1rad.append(pow_dBm_1rad[key])
     return rf_1rad
+
 type, options, aperture, wl, wavefront = auftrag(file='PO/ProdAuftrag_T_TC.pdf', pos=1)
-wl = [780]
-#wl must be a list of the user wavelengths, and cannot be bigger than two at the moment
 title_options = {'+TXC': 'Temperature control option', '+TC': 'Temperature control option', '+T1': 'Frequency tuning option',
                  '+T': 'Frequency tuning option', '+W': 'Crystal wedge option', '+DC': 'DC-port option'}
 vna = VNA()
