@@ -2,6 +2,7 @@ from pylatex import Document, Command
 from pylatex.utils import NoEscape
 from vna_eval import VNA
 from pdfscraping import power_dbm_1rad, auftrag
+from datacsv import data
 
 def p(string):
     # writes plain latex string after \begin{document}
