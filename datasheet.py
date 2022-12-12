@@ -171,11 +171,12 @@ def get_RF_1rad(pow_dBm_1rad, wl_):
             rf_1rad.append(pow_dBm_1rad[key])
     return rf_1rad
 
+path = "P:/Ablage/j.neumeier/aktuelleProduktion/5F_L3x3x30-NIR test/"
 type, options, aperture, wl, wavefront = auftrag(file='PO/ProdAuftrag_T_TC.pdf', pos=1)
 title_options = {'+TXC': 'Temperature control option', '+TC': 'Temperature control option', '+T1': 'Frequency tuning option',
                  '+T': 'Frequency tuning option', '+W': 'Crystal wedge option', '+DC': 'DC-port option'}
-vna = VNA()
-rf_1rad_values = get_RF_1rad(power_dbm_1rad(), wl) #works with beta App generated file, how about mathematica?
+vna = VNA(path + 'vna_remote.txt')
+rf_1rad_values = get_RF_1rad(power_dbm_1rad(path + 'measuredmodulation.pdf'), wl) #works with beta App generated file, how about mathematica?
 
 
 def fill_document():

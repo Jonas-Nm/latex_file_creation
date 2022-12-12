@@ -2,7 +2,7 @@ import np as np
 import numpy as np
 
 class VNA():
-    def __init__(self, file=r'C:\Users\Jonas\PycharmProjects\latex_file_creation\vna_remote.txt'):
+    def __init__(self, file):
         self.file = file
         with open(self.file, "r") as lines:
             lines = lines.readlines()[1:]
