@@ -14,7 +14,7 @@ def power_dbm_1rad(file):
         P_dBm_1rad[wl_nm[i]] = P_dBm[i]
     return P_dBm_1rad
 
-def auftrag(file='PO/ProdAuftrag_W_T.pdf', pos = 1):
+def auftrag(file, pos = 1):
     pdf = PdfFileReader(file)
     num_pages = pdf.numPages
     pdftext = ''
