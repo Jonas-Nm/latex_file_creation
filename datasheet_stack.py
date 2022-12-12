@@ -4,27 +4,25 @@ from vna_eval import VNA
 from pdfscraping import power_dbm_1rad, auftrag
 from datacsv import data
 
-class Datasheet(Document):
-    def __init__(self, default_filepath='default_filepath', *, documentclass='article', document_options=None, fontenc='T1',
-                 inputenc='utf8', font_size="normalsize", lmodern=True, textcomp=True,
-                 microtype=None, page_numbers=True, indent=None, geometry_options=None, data=None):
-        super().__init__(self, default_filepath=default_filepath, *, documentclass=documentclass,
-                         document_options=document_options, fontenc=fontenc, inputenc=inputenc, font_size=font_size, lmodern=lmodern, textcomp=textcomp,
-                         microtype=microtype, page_numbers=page_numbers, indent=indent, geometry_options=geometry_options, data=data)
+# class Datasheet(Document):
+#     def __init__(self, default_filepath='default_filepath', *, documentclass='article', document_options=None, fontenc='T1',
+#                  inputenc='utf8', font_size="normalsize", lmodern=True, textcomp=True,
+#                  microtype=None, page_numbers=True, indent=None, geometry_options=None, data=None):
+#         super().__init__(self, default_filepath=default_filepath, *, documentclass=documentclass,
+#                          document_options=document_options, fontenc=fontenc, inputenc=inputenc, font_size=font_size, lmodern=lmodern, textcomp=textcomp,
+#                          microtype=microtype, page_numbers=page_numbers, indent=indent, geometry_options=geometry_options, data=data)
 
-
-
-def p(string):
-    # writes plain latex string after \begin{document}
-    return doc.append(NoEscape(string))
-def b(string):
-    # writes plain latex string to preamble
-    return doc.preamble.append(NoEscape(string))
+def pre_writing(func):
+    for i in range(len(func)):
+        doc.preamble.append(NoEscape(func[i]))
+def writing(func):
+    for i in range(len(func)):
+        doc.append(NoEscape(func[i]))
 def text_command():
-    b(r'\newcommand{\placetextbox}[3]{% \placetextbox{<horizontal pos>}{<vertical pos>}{<stuff>}')
-    b(r'\setbox0=\hbox{#3}% Put <stuff> in a box')
-    b(r'\AddToShipoutPictureFG*{% Add <stuff> to current page foreground')
-    b(r'\put(\LenToUnit{#1\paperwidth},\LenToUnit{#2\paperheight}){\vtop{{\null}\makebox[0pt][c]{#3}}}}}')
+    return [r'\newcommand{\placetextbox}[3]{% \placetextbox{<horizontal pos>}{<vertical pos>}{<stuff>}',
+            r'\setbox0=\hbox{#3}% Put <stuff> in a box',
+            r'\AddToShipoutPictureFG*{% Add <stuff> to current page foreground',
+            r'\put(\LenToUnit{#1\paperwidth},\LenToUnit{#2\paperheight}){\vtop{{\null}\makebox[0pt][c]{#3}}}}}']
 def picture_command_generator(type,file,coordinates,height):
     # what type of image? Is it 'Logo', 'Title' drawing, etc?
     # height for example '1.5cm'
@@ -33,61 +31,64 @@ def picture_command_generator(type,file,coordinates,height):
     b(r'\newcommand\BackgroundPicture'+type+r'{')
     b(r'\put('+str(coordinates[0])+','+str(coordinates[1])+r'){\parbox[b][\paperheight]{\paperwidth}{\vfill')
     b(r'\centering\includegraphics[height='+height+r']{'+file+r'}\vfill}}}')
+def picture_command_generator(type,file,coordinates,height):
+    return [r'\newcommand\BackgroundPicture'+type+r'{',
+            r'\put('+str(coordinates[0])+','+str(coordinates[1])+r'){\parbox[b][\paperheight]{\paperwidth}{\vfill',
+            r'\centering\includegraphics[height='+height+r']{'+file+r'}\vfill}}}']
+
 def banner_command():
-    b(r'\newcommand{\banner}[1]{\begin{table}[h]\centering')
-    b(r'\begin{tabular}{|p{17cm}|}\hline\rowcolor[HTML]{153c4a}')
-    b(r'\hfil \textcolor{white}{\Large \textbf{{#1}}}')
-    b(r'\end{tabular}\end{table}}')
+    return [r'\newcommand{\banner}[1]{\begin{table}[h]\centering',
+            r'\begin{tabular}{|p{17cm}|}\hline\rowcolor[HTML]{153c4a}',
+            r'\hfil \textcolor{white}{\Large \textbf{{#1}}}',
+            r'\end{tabular}\end{table}}']
 def space(size):
     p(r'\vspace{'+size+'}')
+
 def packages():
-    #####packages
-    b(r'\usepackage[table]{xcolor}')
-    b(r'\usepackage{graphicx}')
-    b(r'\usepackage{setspace}')
-    b(r'\usepackage{siunitx}')
-    b(r'\usepackage{fixltx2e}')
-    b(r'\usepackage[a4paper, total={7in, 10.5in}]{geometry}')
-    b(r'\usepackage[pscoord]{eso-pic}')
+    return [r'\usepackage[table]{xcolor}', r'\usepackage{graphicx}', r'\usepackage{setspace}',
+            r'\usepackage{siunitx}', r'\usepackage{fixltx2e}', r'\usepackage[a4paper, total={7in, 10.5in}]{geometry}',
+            r'\usepackage[pscoord]{eso-pic}']
 def font():
-    doc.preamble.append(NoEscape(r'\renewcommand{\familydefault}{\sfdefault}'))
+    return [r'\renewcommand{\familydefault}{\sfdefault}']
 class Picture():
     def __init__(self, type, file, coordinates, height):
         self.type = type
         self.file = file
         self.coordinates = coordinates
         self.height = height
-        picture_command_generator(self.type, self.file, self.coordinates, self.height)
+        self.command = picture_command_generator(self.type, self.file, self.coordinates, self.height)
     def insert(self):
-        p(r'\AddToShipoutPictureBG*{\BackgroundPicture'+self.type+r'}')
+        return [r'\AddToShipoutPictureBG*{\BackgroundPicture'+self.type+r'}']
 class Text():
     def __init__(self, text='', size='', coordinates=[0.0, 0.0]):
         self.text = text
         self.size = size
         self.coordinates = coordinates #[0.0, 0.0] is defined as left bottom corner, [1.0, 1.0] as top right corner
     def insert(self):
-        p(r'\placetextbox{' + str(self.coordinates[0]) + r'}{' + str(self.coordinates[1]) + r'}{' + self.size + ' ' + self.text + r'}')
+        return [r'\placetextbox{' + str(self.coordinates[0]) + r'}{' + str(self.coordinates[1]) + r'}{' + self.size + ' ' + self.text + r'}']
     def toprightcorner(self):
         self.text = 'Empowering Laser Technologies'
         self.size = r'\Large'
-        self.coordinates = [0.78,0.928]
-        self.insert()
+        self.coordinates = [0.78, 0.928]
+        return self.insert()
     def footnote_page1(self):
         pass
 def table_settings():
-    b(r'\setlength{\arrayrulewidth}{0.2pt}')
-    b(r'\setlength{\tabcolsep}{8pt}')
-    b(r'\renewcommand{\arraystretch}{1.9}')
-    b(r'\arrayrulecolor[HTML]{999999}')
+    return [r'\setlength{\arrayrulewidth}{0.2pt}',
+            r'\setlength{\tabcolsep}{8pt}',
+            r'\renewcommand{\arraystretch}{1.9}',
+            r'\arrayrulecolor[HTML]{999999}']
+
 def general_settings():
-    packages()
-    # font()
-    # table_settings()
-    # text_command()
-    # banner_command()
-    # logo = Picture('Logo', 'images/logo.pdf', [-200, 370], '1.5cm')
-    # logo.insert()
-    # Text().toprightcorner()
+    pre_writing(packages())
+    pre_writing(font())
+    pre_writing(table_settings())
+    pre_writing(text_command())
+    pre_writing(banner_command())
+    logo = Picture('Logo', r'C:/Users/j.neumeier/PycharmProjects/latex_file_creation/images/logo.pdf', [-200, 370], '1.5cm')
+    pre_writing(logo.command)
+    writing(logo.insert())
+    writing(Text().toprightcorner())
 def title_text(PM_type, SN):
     p(r'\phantom{This text will be invisible}')
     p(r'\vspace{25mm}')
@@ -189,9 +190,11 @@ vna = VNA(path + 'vna_remote.txt')
 rf_1rad_values = get_RF_1rad(power_dbm_1rad(path + 'measuredmodulation.pdf'), wl) #works with beta App generated file, how about mathematica?
 
 
+
+
 def fill_document():
-    p(r'asd')
-    # general_settings()
+    doc.append(r'asd')
+    general_settings()
     # title_text(PM_type=type, SN='SN22.1235')
     # Picture('Title', 'images/Cube_page1.pdf', [0, 45], '4.0cm').insert()
     # space('70mm')
@@ -206,7 +209,8 @@ def fill_document():
 
 if __name__ == '__main__':
     # generate datasheet with content
-    doc = Datasheet(default_filepath=path + 'datasheet_stack', document_options=['11pt'])
+    #doc = Document('datasheet_stack', document_options=['11pt'])
+    doc = Document(default_filepath=path + 'datasheet_stack', document_options=['11pt'])
     fill_document()
     doc.generate_pdf(clean_tex=False, compiler='pdfLaTeX')
     doc.generate_tex()
