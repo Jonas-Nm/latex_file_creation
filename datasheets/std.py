@@ -20,17 +20,21 @@ def general_settings():
     pre_writing(logo.command)
     writing(logo.insert())
     writing(Text().toprightcorner())
+
+
 ####
 path = r'P:\Ablage\j.neumeier\aktuelleProduktion\5F_L3x3x30-NIR test'.replace('\\', '/')
 pm_type, options, aperture, wl, wavefront = auftrag(file=path + r'/ProdAuftrag 22.pdf', pos=1)
 ####
+
+
 vna = VNA(path + '/vna_remote.txt')
 rf_1rad_values = get_RF_1rad(power_dbm_1rad(path + '/measuredmodulation.pdf'), wl) #works with beta App generated file, how about mathematica?
 def fill_document():
     general_settings()
     #### first page ###
     writing(title_text(pm_type=pm_type, sn='SN22.1235', options=options))
-    title_drawing = Picture('Title', latex_path('images', 'Cube_page1.pdf'), [0, 45], '4.0cm')
+    title_drawing = Picture('Title', latex_path('images/Std', 'Cube_page1.pdf'), [0, 45], '4.0cm')
     pre_writing(title_drawing.command)
     writing(title_drawing.insert())
     writing(space('70mm'))
@@ -39,7 +43,7 @@ def fill_document():
     writing(footnote_page1(T=23, damage=1))
     #### new page ####
     writing(measured_modulation())
-    measured_mod = Picture('MeasuredMod', latex_path('images', 'measuredmodulation.pdf'), [0, 60], '21.0cm')
+    measured_mod = Picture('MeasuredMod', path + '/measuredmodulation.pdf', [0, 60], '21.0cm')
     pre_writing(measured_mod.command)
     writing(measured_mod.insert())
     #### new page ####
@@ -57,7 +61,7 @@ def fill_document():
     writing(handling_info.insert())
     #### new page ####
     writing(package_drawing())
-    drawing = Picture('Drawing', latex_path('images', 'drawing_cube_std.pdf'), [0, 120], '12.0cm')
+    drawing = Picture('Drawing', latex_path('images/Std', 'drawing_cube_std.pdf'), [0, 120], '12.0cm')
     pre_writing(drawing.command)
     writing(drawing.insert())
     signature = Picture('Signature', latex_path('images', 'signature.pdf'), [0, -360], '1.51cm')
@@ -67,10 +71,12 @@ def fill_document():
 
 if __name__ == '__main__':
     # generate datasheet with content
-    doc = Document(default_filepath=path + '/datasheet_stack', document_options=['11pt'])
+    doc = Document(default_filepath=path + '/datasheet', document_options=['11pt'])
     fill_document()
     doc.generate_pdf(clean_tex=False, compiler='pdfLaTeX')
     doc.generate_tex()
-    #tex = doc.dumps()
-    #print(tex)
+    tex = doc.dumps()
+    print(tex)
+
+
 

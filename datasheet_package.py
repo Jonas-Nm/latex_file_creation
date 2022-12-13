@@ -4,6 +4,7 @@ from vna_eval import VNA
 from pdfscraping import power_dbm_1rad, auftrag
 import os
 from datacsv import data
+from pathlib import Path
 
 # class Datasheet(Document):
 #     def __init__(self, default_filepath='default_filepath', *, documentclass='article', document_options=None, fontenc='T1',
@@ -64,8 +65,9 @@ def table_settings():
             r'\arrayrulecolor[HTML]{999999}']
 
 #print(os.path.join(os.path.join(os.path.dirname(__file__), 'images'), 'logo.pdf').replace('\\', '/'))
-def latex_path(folder, file):
-    return os.path.join(os.path.join(os.path.dirname(__file__), folder), file).replace('\\', '/')
+def latex_path(folder,file, n = 0):
+    go_back = Path(__file__).parents[n]
+    return os.path.join(go_back, folder, file).replace('\\', '/')
 
 
 def title_text(pm_type, sn, options):
