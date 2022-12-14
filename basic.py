@@ -9,6 +9,7 @@ def fill_document(doc):
     :param doc: the document
     :type doc: :class:`pylatex.document.Document` instance
     """
+
     with doc.create(Section('A section')):
         doc.append('Some regular text and some ')
         doc.append(italic('italic text. '))
@@ -43,3 +44,4 @@ if __name__ == '__main__':
 
  #   doc.generate_pdf('basic_maketitle2', clean_tex=False, compiler='pdfLaTeX')
     tex = doc.dumps()  # The document as string in LaTeX syntax
+    print(tex)

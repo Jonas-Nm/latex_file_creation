@@ -123,7 +123,7 @@ class Table:
             rf_1rad = str(rf_1rad[0])
 
         return self.__begin()+[r'{\textbf{RF properties}}  & \hfil \textcolor{white}{\textbf{Value}} & \hfil \textcolor{white}{\textbf{Unit}}  \\ \hline',
-                        r'Resonance frequency: f$_{0}$ $^{1)}$  & \hfil ' + str(fmax[0]) + ' - ' + str(fmin[0]) + r' & \hfil ' + fmax[1] + r' \\ \hline',
+                        r'Resonance frequency: f$_{0}$ $^{1)}$  & \hfil ' + str(fmin[0]) + ' - ' + str(fmax[0]) + r' & \hfil ' + fmax[1] + r' \\ \hline',
                         r'Preset frequency: f$_{set}$ $^{1)}$  & \hfil ' + str(f0[0]) + r' & \hfil ' + f0[1] + r' \\ \hline',
                         r'Bandwidth: $\Delta \nu$  & \hfil ' + str(bw[0]) + r'   & \hfil ' + bw[1] + r' \\ \hline',
                         r'Quality Factor: Q & \multicolumn{2}{|c|}{' + str(q) + r'}  \\ \hline',

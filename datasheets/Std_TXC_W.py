@@ -52,7 +52,7 @@ def handling_info():
     pre_writing(handling_info.command)
     writing(handling_info.insert())
 def vna_pic():
-    vna_pic = Picture('PictureVNA', path + '/vna_remote.png', [0, 50], '14.0cm')
+    vna_pic = Picture('PictureVNA', path + '/vna.png', [0, 50], '14.0cm')
     pre_writing(vna_pic.command)
     writing(vna_pic.insert())
 def vna_setup_pic():
@@ -60,7 +60,7 @@ def vna_setup_pic():
     pre_writing(vna_charac_setup.command)
     writing(vna_charac_setup.insert())
 def measured_mod():
-    measured_mod = Picture('MeasuredMod', path + '/measuredmodulation.pdf', [0, 60], '21.0cm')
+    measured_mod = Picture('MeasuredMod', path + '/mod.pdf', [0, 30], '27.0cm')
     pre_writing(measured_mod.command)
     writing(measured_mod.insert())
 def drawing_title():
@@ -92,21 +92,38 @@ def txc_info(sensor, tec = True):
 
 
 ####
-path = r'P:\Ablage\j.neumeier\aktuelleProduktion\5F_L3x3x30-NIR test'.replace('\\', '/')
-pm_type, options, aperture, wl, wavefront = auftrag(file=path + r'/ProdAuftrag 22.pdf', pos=1)
-intensity = 1 #W/mm^2
-r_ar = 1  #%
-ar = '630-1100' #nm
-temp_sensor = '10kNTC'  #pt1000 or 10kNTC
+path = r'P:\Ablage\j.neumeier\aktuelleProduktion\5F_L3x3x30-NIR SN22.0823 Uni Hannover'.replace('\\', '/')
+ #pt1000 or 10kNTC
+# pm_type, options, aperture, wl, wavefront = auftrag(file=path + r'/ProdAuftrag 22.pdf', pos=1)
+line = 10  # choose the right excel line in database
+data = data(line, r'P:\Ablage\j.neumeier\aktuelleProduktion\database.csv'.replace('\\', '/'))
+sn = data[0]
+pm_type = data[1].replace('_', '\_')
+options = ('+' + data[2].replace('Opt.:', '').replace(',', ',+').replace(' ', '')).split(',') #['+W', '+TXC', '+T']
+if len(options) == 1:
+    options = []
+#options = ['+W', '+T', '+TXC']
+ar = data[3].replace('AR: ', '').replace('nm', '').replace('-', ' - ') #'630-1100' #nm
+acoustic_res = data[13] #'5.0, 6.2, 7.4'
+wl = [data[14]]  #['780','1000']
+if len(data[15]) > 0:
+    wl.append(data[15])
+rf_1rad_values = {}
+for i in range(len(wl)):
+    rf_1rad_values[wl[i]] = data[16+i]
+aperture = data[18]  # '3x3'
+wavefront = data[19]  # '6' means lambda/6 distortion
+intensity = data[20] #W/mm^2
+r_ar = data[21]  #%
+temp_sensor = data[25] #'pt1000' or '10kNTC'
 ####
-options = ['+W', '+TXC']
-
-vna = VNA(path + '/vna_remote.txt')
-rf_1rad_values = get_RF_1rad(power_dbm_1rad(path + '/measuredmodulation.pdf'), wl) #works with beta App generated file, how about mathematica?
+vna = VNA(path + '/vna.txt')
+#rf_1rad_values = get_RF_1rad(power_dbm_1rad(os.path.join(path, 'mod.pdf')), wl) #works with beta App generated file, how about mathematica?
+rf_1rad_values = get_RF_1rad(rf_1rad_values, wl)
 def fill_document():
     general_settings()
     #### first page ###
-    writing(title_text(pm_type=pm_type, sn='SN22.1235', options=options))
+    writing(title_text(pm_type=pm_type, sn=sn, options=options))
     drawing_title()
     writing(space('70mm'))
     tables()
@@ -137,14 +154,18 @@ def fill_document():
     drawing()
     signature()
 
+opt = ''
+for ele in options:
+    opt += ele
+datasheet_name = 'datasheet_'+pm_type.replace('\\', '')+opt+' '+sn
 
 if __name__ == '__main__':
     # generate datasheet with content
-    doc = Document(default_filepath=path + '/datasheet', document_options=['11pt'])
+    doc = Document(default_filepath=path + '/' + datasheet_name, document_options=['11pt'])
     fill_document()
     doc.generate_pdf(clean_tex=False, compiler='pdfLaTeX')
     doc.generate_tex()
     tex = doc.dumps()
     print(tex)
 
-
+print(datasheet_name)

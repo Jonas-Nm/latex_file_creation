@@ -63,7 +63,7 @@ def vna_setup_pic():
     pre_writing(vna_charac_setup.command)
     writing(vna_charac_setup.insert())
 def measured_mod():
-    measured_mod = Picture('MeasuredMod', path + '/mod.pdf', [0, 60], '21.0cm')
+    measured_mod = Picture('MeasuredMod', path + '/mod.pdf', [0, 30], '27.0cm')
     pre_writing(measured_mod.command)
     writing(measured_mod.insert())
 def drawing_title():
@@ -95,15 +95,16 @@ def txc_info(sensor, tec = True):
 
 
 ####
-path = r'P:\Ablage\j.neumeier\aktuelleProduktion\Cold Quanta\4T_M3x3x15-NIR_W SN22.0375R Cold Quanta'.replace('\\', '/')
+path = r'P:\Ablage\j.neumeier\aktuelleProduktion\Cold Quanta\4T_M3x3x15-NIR_W SN22.0378R Cold Quanta'.replace('\\', '/')
  #pt1000 or 10kNTC
 # pm_type, options, aperture, wl, wavefront = auftrag(file=path + r'/ProdAuftrag 22.pdf', pos=1)
-data = data(2, r'P:\Ablage\j.neumeier\aktuelleProduktion\database.csv'.replace('\\', '/'))
+line = 5  # choose the right excel line in database
+data = data(line, r'P:\Ablage\j.neumeier\aktuelleProduktion\database.csv'.replace('\\', '/'))
 sn = data[0]
 pm_type = data[1].replace('_', '\_')
-#options = ('+' + data[2].replace('Opt.: ', '').replace(',', ',+')).split(',') #['+W', '+TXC', '+T']
-options = ['+W', '+T', '+TXC']
-ar = data[3].replace('AR: ', '').replace('nm', '') #'630-1100' #nm
+options = ('+' + data[2].replace('Opt.: ', '').replace(',', ',+')).split(',') #['+W', '+TXC', '+T']
+#options = ['+W', '+T', '+TXC']
+ar = data[3].replace('AR: ', '').replace('nm', '').replace('-', ' - ') #'630-1100' #nm
 fmax = [float(data[7]), data[8]]  #  [5.0, 'MHz']
 fmin = [float(data[5]), data[8]]
 acoustic_res = data[13] #'5.0, 6.2, 7.4'
@@ -170,14 +171,18 @@ def fill_document():
     writing(tuningattention_pic.insert())
     signature()
 
+opt = ''
+for ele in options:
+    opt += ele
+datasheet_name = 'datasheet_'+pm_type.replace('\\', '')+opt+' '+sn
 
 if __name__ == '__main__':
     # generate datasheet with content
-    doc = Document(default_filepath=path + '/datasheet', document_options=['11pt'])
+    doc = Document(default_filepath=path + '/' + datasheet_name, document_options=['11pt'])
     fill_document()
     doc.generate_pdf(clean_tex=False, compiler='pdfLaTeX')
     doc.generate_tex()
     tex = doc.dumps()
     print(tex)
 
-
+print(datasheet_name)
