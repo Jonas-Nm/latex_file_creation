@@ -39,7 +39,7 @@ def signature():
     writing(signature.insert())
 def drawing():
     if '+W' in options:
-        coord = [0, -80]
+        coord = [0, 120]
     else:
         coord = [0, 120]
     if '+TXC' not in options:
@@ -71,7 +71,7 @@ def drawing_title():
     pre_writing(title_drawing.command)
     writing(title_drawing.insert())
 def wedge_pic():
-    wedge_pic = Picture('wedge', latex_path('images/W', 'wedge_alignment.pdf'), [0, 260], '5.0cm')
+    wedge_pic = Picture('wedge', latex_path('images/W', 'wedge_alignment.pdf'), [0, -70], '6.5cm')
     pre_writing(wedge_pic.command)
     writing(wedge_pic.insert())
 def txc_info(sensor, tec = True):
@@ -99,6 +99,8 @@ path = r'P:\Ablage\j.neumeier\aktuelleProduktion\5F_L3x3x30-NIR test'.replace('\
 pm_type, options, aperture, wl, wavefront = auftrag(file=path + r'/ProdAuftrag 22.pdf', pos=1)
 fmax = [5.0, 'MHz']
 fmin = [3.0, 'MHz']
+tuningturns = 9
+acoustic_res = '5.0, 6.2, 7.4'
 intensity = 1 #W/mm^2
 r_ar = 1  #%
 ar = '630-1100' #nm
@@ -127,6 +129,20 @@ def fill_document():
     writing(space('180mm'))
     writing(banner('Handling instructions'))
     handling_info()
+    #### new page ####
+    writing(newpage())
+    writing((banner('Tuning performance')))
+    tuning_pic = Picture('Tuning', latex_path('images/T', 'tuning.pdf'), [125, 235], '6.7cm')
+    writing(tuning_pic.command)
+    writing(tuning_pic.insert())
+    tuninginfo_pic = Picture('Tuninginfo', latex_path('images/T', 'tuning_info.pdf'), [-145, 180], '2.48cm')
+    writing(tuninginfo_pic.command)
+    writing(tuninginfo_pic.insert())
+    writing(space('3mm'))
+    writing(Table().tuning(fmax=fmax, fmin=fmin, n=tuningturns, acres=acoustic_res))
+    writing(space('50mm'))
+    writing(banner('Alignment'))
+    wedge_pic()
     if ('+TC' in options) or ('+TXC' in options):
         #### new page ####
         writing(newpage())
@@ -134,12 +150,11 @@ def fill_document():
         txc_info(temp_sensor)
     #### new page ####
     writing(newpage())
-    if '+W' in options:
-        writing(banner('Alignment'))
-        wedge_pic()
-        writing(space('60mm'))
     writing(banner('Package drawing'))
     drawing()
+    tuningattention_pic = Picture('Tuningattention', latex_path('images/T', 'tuning_attention.pdf'), [0, - 120], '3.0cm')
+    writing(tuningattention_pic.command)
+    writing(tuningattention_pic.insert())
     signature()
 
 

@@ -26,14 +26,14 @@ def picture_command_generator(type, file, coordinates, height):
             r'\centering\includegraphics[height=' + height + r']{' + file + r'}\vfill}}}']
 def banner_command():
     return [r'\newcommand{\banner}[1]{\begin{table}[h]\centering',
-            r'\begin{tabular}{|p{17cm}|}\hline\rowcolor[HTML]{153c4a}',
+            r'\begin{tabular}{|p{18.5cm}|}\hline\rowcolor[HTML]{153c4a}',
             r'\hfil \textcolor{white}{\Large \textbf{{#1}}}',
             r'\end{tabular}\end{table}}']
 def space(size):
     return [r'\vspace{' + size + '}']
 def packages():
     return [r'\usepackage[table]{xcolor}', r'\usepackage{graphicx}', r'\usepackage{setspace}',
-            r'\usepackage{siunitx}', r'\usepackage{fixltx2e}', r'\usepackage[a4paper, total={7in, 10.5in}]{geometry}',
+            r'\usepackage{siunitx}', r'\usepackage{fixltx2e}', r'\usepackage[a4paper, total={7.5in, 10.5in}]{geometry}',
             r'\usepackage[pscoord]{eso-pic}']
 def font():
     return [r'\renewcommand{\familydefault}{\sfdefault}']
@@ -152,6 +152,21 @@ class Table:
                         r'Wedged facets & \multicolumn{2}{|c|}{0°/4°}  \\ \hline']+self.__end()
     def dc_port(self):
         pass #new
+    def tuning(self, fmax, fmin, n, acres):
+        text = [r'\setlength{\arrayrulewidth}{0.2pt}',
+                r'\setlength{\tabcolsep}{8pt}',
+                r'\renewcommand{\arraystretch}{1.7}',
+                r'\begin{table}[h]\small',
+                r'\begin{tabular}{ |p{3.85cm}|p{0.90cm}|p{0.95cm}|p{0.8cm}| }\hline',
+                r'MAX resonance frequency & \hfil f$_{0}$max & \hfil ' + str(fmax[0])  + r' & \hfil ' + fmax[1] + r' \\ \hline',
+                r'Min resonance frequency  & \hfil f$_{0}$min   & \hfil ' + str(fmin[0]) + r'  & \hfil MHz \\ \hline',
+                r'number of turns &  \hfil N$_{max}$   & \hfil ' + str(n) + r'  & \hfil  \\ \hline',
+                r'counter clock-wise turns  & \multicolumn{3}{|c|}{higher f$_{0}$} \\ \hline',
+                r'clock-wise turns & \multicolumn{3}{|c|}{lower f$_{0}$} \\ \hline',
+                r'\end{tabular}\end{table}']
+        if len(acres) != 0:
+           text.append(r'\placetextbox{0.635}{0.715}{\footnotesize @ $\{$'+ acres + '$\}$MHz}')
+        return text
 def footnote_page1(T=23,damage=1):
     return Text(r'$^{1)}$' + str(T) + r'°C $^{2)}$with 50$\si{\ohm}$ termination $^{3)}$no damage with RF\textsubscript{in}\si{<}'
                 + str(damage) + r'W', r'\scriptsize', [0.30, 0.06]).insert()
