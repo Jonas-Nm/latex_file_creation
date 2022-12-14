@@ -114,8 +114,21 @@ class Table:
                         r'Quality Factor: Q & \multicolumn{2}{|c|}{' + str(q) + r'}  \\ \hline',
                         r'Required RF power for 1rad $@$ ' + str(wl) + r'nm $^{2)}$   & \hfil ' + rf_1rad + r' & \hfil dBm \\ \hline',
                         r'max. RF power: RF\textsubscript{max} $^{3)}$ & \hfil ' + str(rf_max) + r'   & \hfil W \\ \hline']+self.__end()
-    def rf_tuning(self):
-        pass #put in list of rf_std
+    def rf_tuning(self, fmax, fmin, f0, bw, q, wl, rf_1rad, rf_max=0.5):
+        if len(wl) > 1:
+            rf_1rad = str(rf_1rad[0])+' | '+str(rf_1rad[1])
+            wl = str(wl[0])+' | '+str(wl[1])
+        else:
+            wl = wl[0]
+            rf_1rad = str(rf_1rad[0])
+
+        return self.__begin()+[r'{\textbf{RF properties}}  & \hfil \textcolor{white}{\textbf{Value}} & \hfil \textcolor{white}{\textbf{Unit}}  \\ \hline',
+                        r'Resonance frequency: f$_{0}$ $^{1)}$  & \hfil ' + str(fmax[0]) + ' - ' + str(fmin[0]) + r' & \hfil ' + fmax[1] + r' \\ \hline',
+                        r'Preset frequency: f$_{set}$ $^{1)}$  & \hfil ' + str(f0[0]) + r' & \hfil ' + f0[1] + r' \\ \hline',
+                        r'Bandwidth: $\Delta \nu$  & \hfil ' + str(bw[0]) + r'   & \hfil ' + bw[1] + r' \\ \hline',
+                        r'Quality Factor: Q & \multicolumn{2}{|c|}{' + str(q) + r'}  \\ \hline',
+                        r'Required RF power for 1rad $@$ ' + str(wl) + r'nm $^{2)}$   & \hfil ' + rf_1rad + r' & \hfil dBm \\ \hline',
+                        r'max. RF power: RF\textsubscript{max} $^{3)}$ & \hfil ' + str(rf_max) + r'   & \hfil W \\ \hline']+self.__end()
     def optical_std(self,aperture,wavefront,wl,intensity,r_ar,ar):
         if len(wl) > 1:
             wl = min(wl)
@@ -126,24 +139,29 @@ class Table:
                         r'Wavefront distortion (633nm) & \hfil $\lambda / ' + str(wavefront) + r' $   & \hfil nm \\ \hline',
                         r'Recommended optical intensity (' + str(wl) + r'nm) & \hfil \si{<} ' + str(intensity) + r' & \hfil W/mm$^2$ \\ \hline',
                         r'AR coating (R\textsubscript{avg}\si{<}' + str(r_ar) + r'\% ) & \hfil ' + ar + r' & \hfil nm  \\ \hline']+self.__end()
-    def optical_wedge(self):
-        pass #put in list of rf_std
+    def optical_wedge(self,aperture,wavefront,wl,intensity,r_ar,ar):
+        if len(wl) > 1:
+            wl = min(wl)
+        else:
+            wl = wl[0]
+        return self.__begin()+[r'{\textbf{Optical properties}}  & \hfil \textcolor{white}{\textbf{Value}} & \hfil \textcolor{white}{\textbf{Unit}} \\ \hline',
+                        r'Aperture & \hfil ' + aperture + r' & \hfil mm$^2$ \\ \hline',
+                        r'Wavefront distortion (633nm) & \hfil $\lambda / ' + str(wavefront) + r' $   & \hfil nm \\ \hline',
+                        r'Recommended optical intensity (' + str(wl) + r'nm) & \hfil \si{<} ' + str(intensity) + r' & \hfil W/mm$^2$ \\ \hline',
+                        r'AR coating (R\textsubscript{avg}\si{<}' + str(r_ar) + r'\% ) & \hfil ' + ar + r' & \hfil nm  \\ \hline',
+                        r'Wedged facets & \multicolumn{2}{|c|}{0°/4°}  \\ \hline']+self.__end()
     def dc_port(self):
         pass #new
 def footnote_page1(T=23,damage=1):
     return Text(r'$^{1)}$' + str(T) + r'°C $^{2)}$with 50$\si{\ohm}$ termination $^{3)}$no damage with RF\textsubscript{in}\si{<}'
                 + str(damage) + r'W', r'\scriptsize', [0.30, 0.06]).insert()
-def measured_modulation():
-    #Picture('MeasuredModSetup', 'images/measuredmodulationsetup.pdf', [0, -320], '3.4cm')
-    #Picture('MeasuredModSubtext', 'images/measuredmodulationsubtext.pdf', [-130, -180], '4.8cm')
-    return [r'\newpage', r'\banner{Measured modulation}']
-def resonance_characteristics():
-    return [r'\newpage', r'\banner{Resonance Characteristics}']
 
-def handling_instructions():
-    return [r'\banner{Handling instructions}']
-def package_drawing():
-    return [r'\newpage', r'\banner{Package drawing}']
+def banner(text):
+    return [r'\banner{' + text + '}']
+def newpage():
+    return [r'\newpage']
+
+
 def get_RF_1rad(pow_dBm_1rad, wl_):
     rf_1rad = []
     for key in pow_dBm_1rad:
