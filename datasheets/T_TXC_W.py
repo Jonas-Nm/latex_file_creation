@@ -55,7 +55,7 @@ def handling_info():
     pre_writing(handling_info.command)
     writing(handling_info.insert())
 def vna_pic():
-    vna_pic = Picture('PictureVNA', path + '/vna_remote.png', [0, 50], '14.0cm')
+    vna_pic = Picture('PictureVNA', path + '/vna.png', [0, 50], '14.0cm')
     pre_writing(vna_pic.command)
     writing(vna_pic.insert())
 def vna_setup_pic():
@@ -63,7 +63,7 @@ def vna_setup_pic():
     pre_writing(vna_charac_setup.command)
     writing(vna_charac_setup.insert())
 def measured_mod():
-    measured_mod = Picture('MeasuredMod', path + '/measuredmodulation.pdf', [0, 60], '21.0cm')
+    measured_mod = Picture('MeasuredMod', path + '/mod.pdf', [0, 60], '21.0cm')
     pre_writing(measured_mod.command)
     writing(measured_mod.insert())
 def drawing_title():
@@ -95,25 +95,38 @@ def txc_info(sensor, tec = True):
 
 
 ####
-path = r'P:\Ablage\j.neumeier\aktuelleProduktion\5F_L3x3x30-NIR test'.replace('\\', '/')
-pm_type, options, aperture, wl, wavefront = auftrag(file=path + r'/ProdAuftrag 22.pdf', pos=1)
-fmax = [5.0, 'MHz']
-fmin = [3.0, 'MHz']
-tuningturns = 9
-acoustic_res = '5.0, 6.2, 7.4'
-intensity = 1 #W/mm^2
-r_ar = 1  #%
-ar = '630-1100' #nm
-temp_sensor = '10kNTC'  #pt1000 or 10kNTC
+path = r'P:\Ablage\j.neumeier\aktuelleProduktion\Cold Quanta\4T_M3x3x15-NIR_W SN22.0375R Cold Quanta'.replace('\\', '/')
+ #pt1000 or 10kNTC
+# pm_type, options, aperture, wl, wavefront = auftrag(file=path + r'/ProdAuftrag 22.pdf', pos=1)
+data = data(2, r'P:\Ablage\j.neumeier\aktuelleProduktion\database.csv'.replace('\\', '/'))
+sn = data[0]
+pm_type = data[1].replace('_', '\_')
+#options = ('+' + data[2].replace('Opt.: ', '').replace(',', ',+')).split(',') #['+W', '+TXC', '+T']
+options = ['+W', '+T', '+TXC']
+ar = data[3].replace('AR: ', '').replace('nm', '') #'630-1100' #nm
+fmax = [float(data[7]), data[8]]  #  [5.0, 'MHz']
+fmin = [float(data[5]), data[8]]
+acoustic_res = data[13] #'5.0, 6.2, 7.4'
+wl = [data[14]]  #['780','1000']
+if len(data[15]) > 0:
+    wl.append(data[15])
+rf_1rad_values = {}
+for i in range(len(wl)):
+    rf_1rad_values[wl[i]] = data[16+i]
+aperture = data[18]  # '3x3'
+wavefront = data[19]  # '6' means lambda/6 distortion
+intensity = data[20] #W/mm^2
+r_ar = data[21]  #%
+tuningturns = data[24]
+temp_sensor = data[25] #'pt1000' or '10kNTC'
 ####
-options = ['+W', '+TXC', '+T']
-
-vna = VNA(path + '/vna_remote.txt')
-rf_1rad_values = get_RF_1rad(power_dbm_1rad(path + '/measuredmodulation.pdf'), wl) #works with beta App generated file, how about mathematica?
+vna = VNA(path + '/vna.txt')
+#rf_1rad_values = get_RF_1rad(power_dbm_1rad(os.path.join(path, 'mod.pdf')), wl) #works with beta App generated file, how about mathematica?
+rf_1rad_values = get_RF_1rad(rf_1rad_values, wl)
 def fill_document():
     general_settings()
     #### first page ###
-    writing(title_text(pm_type=pm_type, sn='SN22.1235', options=options))
+    writing(title_text(pm_type, sn, options))
     drawing_title()
     writing(space('60mm'))
     tables()

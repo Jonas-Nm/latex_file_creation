@@ -119,7 +119,7 @@ class Table:
             rf_1rad = str(rf_1rad[0])+' | '+str(rf_1rad[1])
             wl = str(wl[0])+' | '+str(wl[1])
         else:
-            wl = wl[0]
+            wl = str(wl[0])
             rf_1rad = str(rf_1rad[0])
 
         return self.__begin()+[r'{\textbf{RF properties}}  & \hfil \textcolor{white}{\textbf{Value}} & \hfil \textcolor{white}{\textbf{Unit}}  \\ \hline',
@@ -180,7 +180,7 @@ def newpage():
 def get_RF_1rad(pow_dBm_1rad, wl_):
     rf_1rad = []
     for key in pow_dBm_1rad:
-        if int(key) in wl_:
+        if key in wl_:
             rf_1rad.append(pow_dBm_1rad[key])
     return rf_1rad
 

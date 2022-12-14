@@ -1,18 +1,22 @@
 from PyPDF2 import PdfFileReader
 import re
-
+import os
 
 
 def power_dbm_1rad(file):
     pdftext = PdfFileReader(file).pages[0].extract_text()
-    result_wl_nm = re.search('l nm (.*)\n', pdftext)
-    result_1rad_dBm = re.search('P dBm (.*)\n', pdftext)
-    wl_nm = result_wl_nm.group(1).split(' ')
-    P_dBm = result_1rad_dBm.group(1).split(' ')
+    print(pdftext)
+    # result_wl_nm = re.search('l nm (.*)\n', pdftext)
+    # result_1rad_dBm = re.search('P dBm (.*)\n', pdftext)
+    # wl_nm = result_wl_nm.group(1).split(' ')
+    # P_dBm = result_1rad_dBm.group(1).split(' ')
     P_dBm_1rad = {}
-    for i in range(len(wl_nm)):
-        P_dBm_1rad[wl_nm[i]] = P_dBm[i]
+    # for i in range(len(wl_nm)):
+    #     P_dBm_1rad[wl_nm[i]] = P_dBm[i]
     return P_dBm_1rad
+
+#path = r'P:\Ablage\j.neumeier\aktuelleProduktion\Cold Quanta\4T_M3x3x15-NIR_W SN22.0375R Cold Quanta'.replace('\\', '/')
+#power_dbm_1rad(os.path.join(path, 'mod.pdf'))
 
 def auftrag(file, pos = 1):
     pdf = PdfFileReader(file)

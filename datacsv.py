@@ -1,8 +1,9 @@
 import csv
+import os
 
-
-def data(line_num, file='data.csv'):
-    with open(file, newline='') as csvfile:
+path = r'P:\Ablage\j.neumeier\aktuelleProduktion'.replace('\\', '/')
+def data(line_num, file='database.csv'):
+    with open(os.path.join(path, file), newline='') as csvfile:
         line = csv.reader(csvfile, delimiter=';', quotechar='"')
         i = 1
         for row in line:
@@ -10,5 +11,4 @@ def data(line_num, file='data.csv'):
                 x = row
             i += 1
         return x
-
 
