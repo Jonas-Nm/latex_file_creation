@@ -58,11 +58,17 @@ class Text:
         self.size = r'\Large'
         self.coordinates = [0.78, 0.928]
         return self.insert()
-def table_settings():
-    return [r'\setlength{\arrayrulewidth}{0.2pt}',
-            r'\setlength{\tabcolsep}{8pt}',
-            r'\renewcommand{\arraystretch}{1.9}',
-            r'\arrayrulecolor[HTML]{999999}']
+def table_settings(dc=False):
+    if not dc:
+        return [r'\setlength{\arrayrulewidth}{0.2pt}',
+                r'\setlength{\tabcolsep}{8pt}',
+                r'\renewcommand{\arraystretch}{1.9}',
+                r'\arrayrulecolor[HTML]{999999}']
+    else:
+        return [r'\setlength{\arrayrulewidth}{0.2pt}',
+                r'\setlength{\tabcolsep}{8pt}',
+                r'\renewcommand{\arraystretch}{1.6}',
+                r'\arrayrulecolor[HTML]{999999}']
 
 #print(os.path.join(os.path.join(os.path.dirname(__file__), 'images'), 'logo.pdf').replace('\\', '/'))
 def latex_path(folder,file, n = 0):
@@ -129,7 +135,7 @@ class Table:
                         r'Quality Factor: Q & \multicolumn{2}{|c|}{' + str(q) + r'}  \\ \hline',
                         r'Required RF power for 1rad $@$ ' + str(wl) + r'nm $^{2)}$   & \hfil ' + rf_1rad + r' & \hfil dBm \\ \hline',
                         r'max. RF power: RF\textsubscript{max} $^{3)}$ & \hfil ' + str(rf_max) + r'   & \hfil W \\ \hline']+self.__end()
-    def optical_std(self,aperture,wavefront,wl,intensity,r_ar,ar):
+    def optical_std(self, aperture, wavefront, wl, intensity, r_ar, ar):
         if len(wl) > 1:
             wl = min(wl)
         else:
@@ -139,7 +145,7 @@ class Table:
                         r'Wavefront distortion (633nm) & \hfil $\lambda / ' + str(wavefront) + r' $   & \hfil nm \\ \hline',
                         r'Recommended optical intensity (' + str(wl) + r'nm) & \hfil \si{<} ' + str(intensity) + r' & \hfil W/mm$^2$ \\ \hline',
                         r'AR coating (R\textsubscript{avg}\si{<}' + str(r_ar) + r'\% ) & \hfil ' + ar + r' & \hfil nm  \\ \hline']+self.__end()
-    def optical_wedge(self,aperture,wavefront,wl,intensity,r_ar,ar):
+    def optical_wedge(self, aperture, wavefront, wl, intensity, r_ar, ar):
         if len(wl) > 1:
             wl = min(wl)
         else:
@@ -150,8 +156,19 @@ class Table:
                         r'Recommended optical intensity (' + str(wl) + r'nm) & \hfil \si{<} ' + str(intensity) + r' & \hfil W/mm$^2$ \\ \hline',
                         r'AR coating (R\textsubscript{avg}\si{<}' + str(r_ar) + r'\% ) & \hfil ' + ar + r' & \hfil nm  \\ \hline',
                         r'Wedged facets & \multicolumn{2}{|c|}{0°/4°}  \\ \hline']+self.__end()
-    def dc_port(self):
-        pass #new
+    def dc_port(self, wl, Vdc):
+        if len(wl) > 1:
+            wl = str(wl[0])+' | '+str(wl[1])
+            Vdc = str(Vdc[0]) + ' | ' + str(Vdc[1])
+        else:
+            wl = str(wl[0])
+            Vdc = str(Vdc[0])
+        return self.__begin()+[r'{\textbf{DC properties}}  & \hfil \textcolor{white}{\textbf{Value}} & \hfil \textcolor{white}{\textbf{Unit}} \\ \hline',
+                        r'DC Bandwidth: $\Delta \nu_{DC}$ (-3dB) & \hfil 11 & \hfil kHz \\ \hline',
+                        r'Required DC voltage for $\pi$ rad (PM) $@$ ' + str(wl) + r'nm & \hfil ' + Vdc + r'   & \hfil V \\ \hline',
+                        r'max. DC voltage: V$_{max}$ & \hfil +/-500 & \hfil Vdc \\ \hline',
+                        r'Input capacitance (DC) & \hfil 1 & \hfil nF  \\ \hline']+self.__end()
+
     def tuning(self, fmax, fmin, n, acres):
         text = [r'\setlength{\arrayrulewidth}{0.2pt}',
                 r'\setlength{\tabcolsep}{8pt}',
@@ -165,7 +182,7 @@ class Table:
                 r'clock-wise turns & \multicolumn{3}{|c|}{lower f$_{0}$} \\ \hline',
                 r'\end{tabular}\end{table}']
         if len(acres) != 0:
-           text.append(r'\placetextbox{0.635}{0.715}{\footnotesize @ $\{$'+ acres + '$\}$MHz}')
+           text.append(r'\placetextbox{0.635}{0.09}{\footnotesize @ $\{$'+ acres + '$\}$MHz}')
         return text
 def footnote_page1(T=23,damage=1):
     return Text(r'$^{1)}$' + str(T) + r'°C $^{2)}$with 50$\si{\ohm}$ termination $^{3)}$no damage with RF\textsubscript{in}\si{<}'

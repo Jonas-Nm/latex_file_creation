@@ -11,7 +11,7 @@ def writing(func):
 def general_settings():
     pre_writing(packages())
     pre_writing(font())
-    pre_writing(table_settings())
+    pre_writing(table_settings(dc=True))
     pre_writing(text_command())
     pre_writing(banner_command())
     logo = Picture('Logo',
@@ -21,7 +21,11 @@ def general_settings():
     writing(logo.insert())
     writing(Text().toprightcorner())
 def tables():
-    writing(Table().rf_std(f0=vna.f0('MHz'), bw=vna.bw('kHz'), q=vna.q(), wl=wl, rf_1rad=rf_1rad_values))
+    if '+T' in options:
+        writing(Table().rf_tuning(fmax=fmax, fmin=fmin, f0=vna.f0('MHz'), bw=vna.bw('kHz'), q=vna.q(), wl=wl, rf_1rad=rf_1rad_values))
+    else:
+        writing(Table().rf_std(f0=vna.f0('MHz'), bw=vna.bw('kHz'), q=vna.q(), wl=wl, rf_1rad=rf_1rad_values))
+    writing(Table().dc_port(wl=wl, Vdc=Vdc_values))
     if '+W' in options:
         writing(Table().optical_wedge(aperture=aperture, wavefront=wavefront, wl=wl, intensity=intensity, r_ar=r_ar,
                                       ar=ar))  # take ar from .csv where label info, SN, tuning, etc
@@ -35,20 +39,12 @@ def signature():
     pre_writing(signature.command)
     writing(signature.insert())
 def drawing():
-    if '+W' in options:
-        coord = [0, -80]
-    else:
-        coord = [0, 120]
-    if '+TXC' not in options:
-        drawing = Picture('Drawing', latex_path('images/Std', 'drawing_cube_std.pdf'), coord, '12.0cm')
-        pre_writing(drawing.command)
-        writing(drawing.insert())
-    else:
-        drawing = Picture('Drawing', latex_path('images/TXC', 'TXC_drawing.pdf'), coord, '13.0cm')
-        pre_writing(drawing.command)
-        writing(drawing.insert())
+    drawing = Picture('Drawing', latex_path('images/DC', 'DC_drawing.pdf'), [0, 15], '14.0cm')
+    pre_writing(drawing.command)
+    writing(drawing.insert())
+
 def handling_info():
-    handling_info = Picture('Handling', latex_path('images', 'handling_instructions_std.pdf'), [0, -250], '2.12cm')
+    handling_info = Picture('Handling', latex_path('images', 'handling_instructions_std.pdf'), [0, 320], '2.12cm')
     pre_writing(handling_info.command)
     writing(handling_info.insert())
 def vna_pic():
@@ -64,11 +60,11 @@ def measured_mod():
     pre_writing(measured_mod.command)
     writing(measured_mod.insert())
 def drawing_title():
-    title_drawing = Picture('Title', latex_path('images/Std', 'Cube_page1.pdf'), [0, 45], '4.0cm')
+    title_drawing = Picture('Title', latex_path('images/Std', 'Cube_page1.pdf'), [0, 55], '4.0cm')
     pre_writing(title_drawing.command)
     writing(title_drawing.insert())
 def wedge_pic():
-    wedge_pic = Picture('wedge', latex_path('images/W', 'wedge_alignment.pdf'), [0, 260], '5.0cm')
+    wedge_pic = Picture('wedge', latex_path('images/W', 'wedge_alignment.pdf'), [0, -150], '6.5cm')
     pre_writing(wedge_pic.command)
     writing(wedge_pic.insert())
 def txc_info(sensor, tec = True):
@@ -92,18 +88,19 @@ def txc_info(sensor, tec = True):
 
 
 ####
-#path = r'P:\Ablage\j.neumeier\aktuelleProduktion\5F_L3x3x30-NIR SN22.0823 Uni Hannover'.replace('\\', '/')
+path = r'P:\Ablage\j.neumeier\aktuelleProduktion\Government Scientific Source\5.2T_M3x3x30-SWIR1+W+TXC+DC SN22.0803 Government Scientific Source'.replace('\\', '/')
  #pt1000 or 10kNTC
 # pm_type, options, aperture, wl, wavefront = auftrag(file=path + r'/ProdAuftrag 22.pdf', pos=1)
-line = 10  # choose the right excel line in database
+line = 11  # choose the right excel line in database
 data = data(line, r'P:\Ablage\j.neumeier\aktuelleProduktion\database.csv'.replace('\\', '/'))
+
 sn = data[0]
 pm_type = data[1].replace('_', '\_')
-options = ('+' + data[2].replace('Opt.:', '').replace(',', ',+').replace(' ', '')).split(',') #['+W', '+TXC', '+T']
-if len(options) == 1:
-    options = []
+options = ('+' + data[2].replace('Opt.: ', '').replace(',', ',+')).split(',') #['+W', '+TXC', '+T']
 #options = ['+W', '+T', '+TXC']
 ar = data[3].replace('AR: ', '').replace('nm', '').replace('-', ' - ') #'630-1100' #nm
+fmax = [float(data[7]), data[8]]  #  [5.0, 'MHz']
+fmin = [float(data[5]), data[8]]
 acoustic_res = data[13] #'5.0, 6.2, 7.4'
 wl = [data[14]]  #['780','1000']
 if len(data[15]) > 0:
@@ -111,21 +108,28 @@ if len(data[15]) > 0:
 rf_1rad_values = {}
 for i in range(len(wl)):
     rf_1rad_values[wl[i]] = data[16+i]
+Vdc_values = {}
+for i in range(len(wl)):
+    Vdc_values[wl[i]] = data[22+i]
 aperture = data[18]  # '3x3'
 wavefront = data[19]  # '6' means lambda/6 distortion
 intensity = data[20] #W/mm^2
 r_ar = data[21]  #%
+tuningturns = data[24]
 temp_sensor = data[25] #'pt1000' or '10kNTC'
 ####
 vna = VNA(path + '/vna.txt')
 #rf_1rad_values = get_RF_1rad(power_dbm_1rad(os.path.join(path, 'mod.pdf')), wl) #works with beta App generated file, how about mathematica?
 rf_1rad_values = get_RF_1rad(rf_1rad_values, wl)
+Vdc_values = get_RF_1rad(Vdc_values, wl)
+
+
+
 def fill_document():
     general_settings()
     #### first page ###
-    writing(title_text(pm_type=pm_type, sn=sn, options=options))
-    drawing_title()
-    writing(space('70mm'))
+    writing(title_text(pm_type, sn, options))
+    writing(space('40mm'))
     tables()
     #### new page ####
     writing(newpage())
@@ -137,8 +141,24 @@ def fill_document():
     vna_setup_pic()
     vna_pic()
     writing(space('180mm'))
-    writing(banner('Handling instructions'))
-    handling_info()
+    writing((banner('Tuning performance')))
+    tuning_pic = Picture('Tuning', latex_path('images/T', 'tuning.pdf'), [125, -292], '6.7cm')
+    writing(tuning_pic.command)
+    writing(tuning_pic.insert())
+    tuninginfo_pic = Picture('Tuninginfo', latex_path('images/T', 'tuning_info.pdf'), [-145, -350], '2.48cm')
+    writing(tuninginfo_pic.command)
+    writing(tuninginfo_pic.insert())
+    writing(space('-7mm'))
+    writing(Table().tuning(fmax=fmax, fmin=fmin, n=tuningturns, acres=acoustic_res))
+    #### new page ####
+    writing(newpage())
+    writing(banner('DC characteristics'))
+    dc_pic = Picture('DC', latex_path('images/DC', 'DC_characteristics.pdf'), [0, 180], '12cm')
+    writing(dc_pic.command)
+    writing(dc_pic.insert())
+    writing(space('130mm'))
+    writing(banner('Alignment'))
+    wedge_pic()
     if ('+TC' in options) or ('+TXC' in options):
         #### new page ####
         writing(newpage())
@@ -146,12 +166,14 @@ def fill_document():
         txc_info(temp_sensor)
     #### new page ####
     writing(newpage())
-    if '+W' in options:
-        writing(banner('Alignment'))
-        wedge_pic()
-        writing(space('60mm'))
+    writing(banner('Handling instructions'))
+    handling_info()
+    writing(space('30mm'))
     writing(banner('Package drawing'))
     drawing()
+    tuningattention_pic = Picture('Tuningattention', latex_path('images/T', 'tuning_attention.pdf'), [0, - 240], '3.0cm')
+    writing(tuningattention_pic.command)
+    writing(tuningattention_pic.insert())
     signature()
 
 opt = ''

@@ -63,7 +63,7 @@ def vna_setup_pic():
     pre_writing(vna_charac_setup.command)
     writing(vna_charac_setup.insert())
 def measured_mod():
-    measured_mod = Picture('MeasuredMod', path + '/mod.pdf', [0, 30], '27.0cm')
+    measured_mod = Picture('MeasuredMod', path + '/mod.pdf', [0, 20], '29.0cm')
     pre_writing(measured_mod.command)
     writing(measured_mod.insert())
 def drawing_title():
@@ -95,7 +95,7 @@ def txc_info(sensor, tec = True):
 
 
 ####
-path = r'P:\Ablage\j.neumeier\aktuelleProduktion\Cold Quanta\4T_M3x3x15-NIR_W SN22.0378R Cold Quanta'.replace('\\', '/')
+# path = r'P:\Ablage\j.neumeier\aktuelleProduktion\Cold Quanta\4T_M3x3x15-NIR_W SN22.0378R Cold Quanta'.replace('\\', '/')
  #pt1000 or 10kNTC
 # pm_type, options, aperture, wl, wavefront = auftrag(file=path + r'/ProdAuftrag 22.pdf', pos=1)
 line = 5  # choose the right excel line in database
