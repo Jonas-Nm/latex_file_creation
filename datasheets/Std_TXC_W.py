@@ -93,9 +93,10 @@ def txc_info(sensor, tec = True):
 
 ####
 #path = r'P:\Ablage\j.neumeier\aktuelleProduktion\5F_L3x3x30-NIR SN22.0823 Uni Hannover'.replace('\\', '/')
- #pt1000 or 10kNTC
-# pm_type, options, aperture, wl, wavefront = auftrag(file=path + r'/ProdAuftrag 22.pdf', pos=1)
+
 line = 10  # choose the right excel line in database
+
+
 data = data(line, r'P:\Ablage\j.neumeier\aktuelleProduktion\database.csv'.replace('\\', '/'))
 sn = data[0]
 pm_type = data[1].replace('_', '\_')
@@ -116,10 +117,11 @@ wavefront = data[19]  # '6' means lambda/6 distortion
 intensity = data[20] #W/mm^2
 r_ar = data[21]  #%
 temp_sensor = data[25] #'pt1000' or '10kNTC'
+# pm_type, options, aperture, wl, wavefront = auftrag(file=path + r'/ProdAuftrag 22.pdf', pos=1)
 ####
 vna = VNA(path + '/vna.txt')
 #rf_1rad_values = get_RF_1rad(power_dbm_1rad(os.path.join(path, 'mod.pdf')), wl) #works with beta App generated file, how about mathematica?
-rf_1rad_values = get_RF_1rad(rf_1rad_values, wl)
+rf_1rad_values = get_values(rf_1rad_values, wl)
 def fill_document():
     general_settings()
     #### first page ###

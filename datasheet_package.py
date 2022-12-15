@@ -194,12 +194,12 @@ def newpage():
     return [r'\newpage']
 
 
-def get_RF_1rad(pow_dBm_1rad, wl_):
-    rf_1rad = []
-    for key in pow_dBm_1rad:
+def get_values(dic, wl_):
+    values = []
+    for key in dic:
         if key in wl_:
-            rf_1rad.append(pow_dBm_1rad[key])
-    return rf_1rad
+            values.append(dic[key])
+    return values
 
 title_options = {'+TXC': 'Temperature control option', '+TC': 'Temperature control option', '+T1': 'Frequency tuning option',
                  '+T': 'Frequency tuning option', '+W': 'Crystal wedge option', '+DC': 'DC-port option'}
