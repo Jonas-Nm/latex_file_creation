@@ -95,7 +95,7 @@ def txc_info(sensor, tec = True):
 
 
 ####
-# path = r'P:\Ablage\j.neumeier\aktuelleProduktion\Cold Quanta\4T_M3x3x15-NIR_W SN22.0378R Cold Quanta'.replace('\\', '/')
+#  path = r'P:\Ablage\j.neumeier\aktuelleProduktion\Cold Quanta\4T_M3x3x15-NIR_W SN22.0378R Cold Quanta'.replace('\\', '/')
 
 line = 5  # choose the right excel line in database
 

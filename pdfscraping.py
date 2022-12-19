@@ -4,35 +4,21 @@ import os
 from tika import parser  #needs java run time
 
 
-file = r'C:\Users\Jonas\PycharmProjects\latex_file_creation\important_files\mod_betaapp.pdf'
-#data = tb.read_pdf(file, area = (300, 0, 600, 800), pages = '1')
-parsedPDF = parser.from_file(file)
-content = parsedPDF['content']
-print(content)
-wl = re.search('nm (.*)\n', content).group(1)
-power = re.search('P dBm (.*)\n', content).group(1)
-wl_measured = re.search('(.*) \(meas\.\)', content).group(1)
-print(wl)
-print(power)
-print(wl_measured)
-#dfs = tb.read_pdf(file, pages='all')
-#print(dfs)
-#print(type(dfs))
+# file = r'C:\Users\j.neumeier\PycharmProjects\latex_file_creation\important_files\mod_betaapp.pdf'.replace('\\', '/')
+
 
 def power_dbm_1rad(file):
-    pdftext = PdfFileReader(file).pages[0].extract_text()
-    print(pdftext)
-    # result_wl_nm = re.search('l nm (.*)\n', pdftext)
-    # result_1rad_dBm = re.search('P dBm (.*)\n', pdftext)
-    # wl_nm = result_wl_nm.group(1).split(' ')
-    # P_dBm = result_1rad_dBm.group(1).split(' ')
+    # pdftext = PdfFileReader(file).pages[0].extract_text()
+    content = parser.from_file(file)['content']
+    result_wl_nm = re.search('nm (.*)\n', content).group(1)
+    result_1rad_dBm = re.search('P dBm (.*)\n', content).group(1)
+    result_wl_meas = re.search('(.*) \(meas\.\)', content).group(1)
+    wl_nm = result_wl_nm.split(' ')
+    P_dBm = result_1rad_dBm.split(' ')
     P_dBm_1rad = {}
-    # for i in range(len(wl_nm)):
-    #     P_dBm_1rad[wl_nm[i]] = P_dBm[i]
-    return P_dBm_1rad
-
-#path = r'P:\Ablage\j.neumeier\aktuelleProduktion\Cold Quanta\4T_M3x3x15-NIR_W SN22.0375R Cold Quanta'.replace('\\', '/')
-#power_dbm_1rad(file)
+    for i in range(len(wl_nm)):
+        P_dBm_1rad[wl_nm[i]] = P_dBm[i]
+    return P_dBm_1rad, result_wl_meas
 
 def auftrag(file, pos = 1):
     pdf = PdfFileReader(file)
