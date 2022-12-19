@@ -202,5 +202,4 @@ def get_values(dic, wl_):
     return values
 
 title_options = {'+TXC': 'Temperature control option', '+TC': 'Temperature control option', '+T1': 'Frequency tuning option',
-                 '+T': 'Frequency tuning option', '+W': 'Crystal wedge option', '+DC': 'DC-port option'}
-
+                 '+T': 'Frequency tuning option', '+W': 'Crystal wedge option', '+DC': 'DC-port option', '+AR': 'Customised AR coating option'}

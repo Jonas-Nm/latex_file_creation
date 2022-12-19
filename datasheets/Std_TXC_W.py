@@ -36,15 +36,15 @@ def signature():
     writing(signature.insert())
 def drawing():
     if '+W' in options:
-        coord = [0, -80]
+        coord = [-10, -80]
     else:
-        coord = [0, 120]
+        coord = [-10, 120]
     if '+TXC' not in options:
         drawing = Picture('Drawing', latex_path('images/Std', 'drawing_cube_std.pdf'), coord, '12.0cm')
         pre_writing(drawing.command)
         writing(drawing.insert())
     else:
-        drawing = Picture('Drawing', latex_path('images/TXC', 'TXC_drawing.pdf'), coord, '13.0cm')
+        drawing = Picture('Drawing', latex_path('images/TXC', 'TXC_drawing.pdf'), coord, '14.5cm')
         pre_writing(drawing.command)
         writing(drawing.insert())
 def handling_info():
@@ -92,10 +92,10 @@ def txc_info(sensor, tec = True):
 
 
 ####
-#path = r'P:\Ablage\j.neumeier\aktuelleProduktion\5F_L3x3x30-NIR SN22.0823 Uni Hannover'.replace('\\', '/')
+path = r'P:\Ablage\j.neumeier\aktuelleProduktion\19F_M3x3x15+AR+TXC SN22.0521 Alpine Quantum Tech'.replace('\\', '/')
 
-line = 10  # choose the right excel line in database
-
+line = 12  # choose the right excel line in database
+mod_scraping = True
 
 data = data(line, r'P:\Ablage\j.neumeier\aktuelleProduktion\database.csv'.replace('\\', '/'))
 sn = data[0]
@@ -120,8 +120,16 @@ temp_sensor = data[25] #'pt1000' or '10kNTC'
 # pm_type, options, aperture, wl, wavefront = auftrag(file=path + r'/ProdAuftrag 22.pdf', pos=1)
 ####
 vna = VNA(path + '/vna.txt')
-#rf_1rad_values = get_RF_1rad(power_dbm_1rad(os.path.join(path, 'mod.pdf')), wl) #works with beta App generated file, how about mathematica?
 rf_1rad_values = get_values(rf_1rad_values, wl)
+if mod_scraping:
+    rf_1rad_values = []
+    wl = []
+    for key, value in power_dbm_1rad(path + '/mod.pdf').items():
+        wl.append(key)
+        rf_1rad_values.append(value)
+
+
+
 def fill_document():
     general_settings()
     #### first page ###
@@ -171,3 +179,4 @@ if __name__ == '__main__':
     print(tex)
 
 print(datasheet_name)
+print(options)
