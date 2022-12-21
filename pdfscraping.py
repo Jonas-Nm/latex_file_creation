@@ -1,4 +1,4 @@
-from PyPDF2 import PdfFileReader
+#from PyPDF2 import PdfFileReader
 import re
 import os
 from tika import parser  #needs java run time

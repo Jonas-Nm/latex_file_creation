@@ -70,11 +70,13 @@ def table_settings(dc=False):
                 r'\renewcommand{\arraystretch}{1.6}',
                 r'\arrayrulecolor[HTML]{999999}']
 
-#print(os.path.join(os.path.join(os.path.dirname(__file__), 'images'), 'logo.pdf').replace('\\', '/'))
-def latex_path(folder,file, n = 0):
-    go_back = Path(__file__).parents[n]
-    return os.path.join(go_back, folder, file).replace('\\', '/')
 
+def latex_path(folder,file, n = 0):
+    if False:
+        go_back = Path(__file__).parents[n]
+        return os.path.join(go_back, folder, file).replace('\\', '/')
+    else:
+        return os.path.join(r'P:\Ablage\datasheet', folder, file).replace('\\', '/')
 
 def title_text(pm_type, sn, options):
     string_list = [r'\phantom{This text will be invisible}',
