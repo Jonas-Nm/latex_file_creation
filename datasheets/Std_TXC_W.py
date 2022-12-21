@@ -68,7 +68,7 @@ def drawing_title():
     pre_writing(title_drawing.command)
     writing(title_drawing.insert())
 def wedge_pic():
-    wedge_pic = Picture('wedge', latex_path('images/W', 'wedge_alignment.pdf'), [0, 260], '5.0cm')
+    wedge_pic = Picture('wedge', latex_path('images/W', 'wedge_alignment.pdf'), [0, 260], '6.0cm')
     pre_writing(wedge_pic.command)
     writing(wedge_pic.insert())
 def txc_info(sensor, tec = True):
@@ -92,9 +92,9 @@ def txc_info(sensor, tec = True):
 
 
 ####
-path = r'P:\Ablage\j.neumeier\aktuelleProduktion\19F_M3x3x15+AR+TXC SN22.0521 Alpine Quantum Tech'.replace('\\', '/')
+path = r'P:\Ablage\j.neumeier\aktuelleProduktion\Optronscience\0.5F_M3x3x20-VIS+W+TXC SN22.0835 Optronscience'.replace('\\', '/')
 
-line = 12  # choose the right excel line in database
+line = 21  # choose the right excel line in database
 mod_scraping = True
 
 data = data(line, r'P:\Ablage\j.neumeier\aktuelleProduktion\database.csv'.replace('\\', '/'))
