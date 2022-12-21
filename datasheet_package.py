@@ -178,7 +178,7 @@ class Table:
                 r'\begin{table}[h]\small',
                 r'\begin{tabular}{ |p{3.85cm}|p{0.90cm}|p{0.95cm}|p{0.8cm}| }\hline',
                 r'MAX resonance frequency & \hfil f$_{0}$max & \hfil ' + str(fmax[0])  + r' & \hfil ' + fmax[1] + r' \\ \hline',
-                r'Min resonance frequency  & \hfil f$_{0}$min   & \hfil ' + str(fmin[0]) + r'  & \hfil MHz \\ \hline',
+                r'Min resonance frequency  & \hfil f$_{0}$min   & \hfil ' + str(fmin[0]) + r'  & \hfil ' + fmax[1] + r' \\ \hline',
                 r'number of turns &  \hfil N$_{max}$   & \hfil ' + str(n) + r'  & \hfil  \\ \hline',
                 r'counter clock-wise turns  & \multicolumn{3}{|c|}{higher f$_{0}$} \\ \hline',
                 r'clock-wise turns & \multicolumn{3}{|c|}{lower f$_{0}$} \\ \hline',
@@ -204,4 +204,4 @@ def get_values(dic, wl_):
     return values
 
 title_options = {'+TXC': 'Temperature control option', '+TC': 'Temperature control option', '+T1': 'Frequency tuning option',
-                 '+T': 'Frequency tuning option', '+W': 'Crystal wedge option', '+DC': 'DC-port option', '+AR': 'Customised AR coating option'}
+                 '+T': 'Frequency tuning option', '+Tx': 'Extended tuning range option', '+W': 'Crystal wedge option', '+DC': 'DC-port option', '+AR': 'Customised AR coating option'}

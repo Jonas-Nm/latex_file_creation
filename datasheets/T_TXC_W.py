@@ -21,7 +21,7 @@ def general_settings():
     writing(logo.insert())
     writing(Text().toprightcorner())
 def tables():
-    if '+T' in options:
+    if ('+T' in options) or ('+Tx' in options):
         writing(Table().rf_tuning(fmax=fmax, fmin=fmin, f0=vna.f0('MHz'), bw=vna.bw('kHz'), q=vna.q(), wl=wl, rf_1rad=rf_1rad_values))
     else:
         writing(Table().rf_std(f0=vna.f0('MHz'), bw=vna.bw('kHz'), q=vna.q(), wl=wl, rf_1rad=rf_1rad_values))
@@ -47,7 +47,7 @@ def drawing():
         pre_writing(drawing.command)
         writing(drawing.insert())
     else:
-        drawing = Picture('Drawing', latex_path('images/TXC', 'TXC_drawing.pdf'), coord, '13.0cm')
+        drawing = Picture('Drawing', latex_path('images/TXC', 'TXC_drawing.pdf'), coord, '14.0cm')
         pre_writing(drawing.command)
         writing(drawing.insert())
 def handling_info():
@@ -95,10 +95,10 @@ def txc_info(sensor, tec = True):
 
 
 ####
-#  path = r'P:\Ablage\j.neumeier\aktuelleProduktion\Cold Quanta\4T_M3x3x15-NIR_W SN22.0378R Cold Quanta'.replace('\\', '/')
+#path = r'P:\Ablage\j.neumeier\aktuelleProduktion\Uni Ulm\0.1T_M3x3x20-VIS+Tx+W+TXC SN22.0826 Uni Ulm'.replace('\\', '/')
 
-line = 5  # choose the right excel line in database
-
+line = 20  # choose the right excel line in database
+mod_scraping = True
 
 data = data(line, r'P:\Ablage\j.neumeier\aktuelleProduktion\database.csv'.replace('\\', '/'))
 sn = data[0]
@@ -124,8 +124,15 @@ temp_sensor = data[25] #'pt1000' or '10kNTC'
 # pm_type, options, aperture, wl, wavefront = auftrag(file=path + r'/ProdAuftrag 22.pdf', pos=1)
 ####
 vna = VNA(path + '/vna.txt')
-#rf_1rad_values = get_RF_1rad(power_dbm_1rad(os.path.join(path, 'mod.pdf')), wl) #works with beta App generated file, how about mathematica?
 rf_1rad_values = get_values(rf_1rad_values, wl)
+if mod_scraping:
+    rf_1rad_values = []
+    wl = []
+    for key, value in power_dbm_1rad(path + '/mod.pdf').items():
+        wl.append(key)
+        rf_1rad_values.append(value)
+
+
 def fill_document():
     general_settings()
     #### first page ###
@@ -188,3 +195,4 @@ if __name__ == '__main__':
     print(tex)
 
 print(datasheet_name)
+print(options)
